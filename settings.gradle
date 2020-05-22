@@ -1,0 +1,5 @@
+rootProject.name='MaterialCalendar'
+include ':sample'
+include ':library'
+include ":behaviors"
+project(':behaviors').projectDir = new File("/opt/Projects/Android/Behaviors/behaviors")
