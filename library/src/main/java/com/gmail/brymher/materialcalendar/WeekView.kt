@@ -23,7 +23,7 @@ import org.threeten.bp.LocalDate
 class WeekView(
     view: MaterialCalendarView,
     firstViewDay: CalendarDay?,
-    firstDayOfWeek: DayOfWeek?,
+    firstDayOfWeek: DayOfWeek,
     showWeekDays: Boolean
 ) : CalendarPagerView(
     view,

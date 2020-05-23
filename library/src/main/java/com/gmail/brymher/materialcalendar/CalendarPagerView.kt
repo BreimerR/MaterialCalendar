@@ -1,5 +1,6 @@
 package com.gmail.brymher.materialcalendar
 
+import android.content.Context
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
@@ -12,15 +13,39 @@ import com.gmail.brymher.materialcalendar.format.WeekDayFormatter
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 import org.threeten.bp.temporal.WeekFields
+import java.lang.NullPointerException
 import java.util.*
 
 
-abstract class CalendarPagerView(
-    private val mcv: MaterialCalendarView,
-    val firstViewDay: CalendarDay?,
-    protected val firstDayOfWeek: DayOfWeek?,
-    protected var showWeekDays: Boolean
-) : ViewGroup(mcv.context), View.OnClickListener, OnLongClickListener {
+abstract class CalendarPagerView : ViewGroup, View.OnClickListener, OnLongClickListener {
+
+
+    lateinit var mcv: MaterialCalendarView
+    var firstViewDay: CalendarDay? = null
+    var firstDayOfWeek: DayOfWeek = DayOfWeek.SUNDAY
+    var showWeekDays: Boolean = true
+
+    constructor(
+        mcv: MaterialCalendarView,
+        firstViewDay: CalendarDay?,
+        firstDayOfWeek: DayOfWeek,
+        showWeekDays: Boolean
+    ) : super(mcv.context) {
+        this.mcv = mcv
+        this.firstDayOfWeek = firstDayOfWeek
+        this.firstViewDay = firstViewDay
+        this.showWeekDays = showWeekDays
+    }
+
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+
+    constructor(context: Context, attrs: AttributeSet, defStyleRes: Int) : super(
+        context,
+        attrs,
+        defStyleRes
+    )
+
+
     private val weekDayViews = ArrayList<WeekDayView>()
     private val decoratorResults = ArrayList<DecoratorResult>()
 
@@ -39,18 +64,21 @@ abstract class CalendarPagerView(
      * TODO
      * make weeks not a view pager as it does not change
      */
-    private fun buildWeekDays(calendar: LocalDate) {
-        var local = calendar
-        for (i in 0 until DEFAULT_DAYS_IN_WEEK) {
-            val weekDayView =
-                WeekDayView(context, local.dayOfWeek)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                weekDayView.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+    private fun buildWeekDays(calendar: LocalDate?) {
+        calendar?.let {
+            var local = it
+            for (i in 0 until DEFAULT_DAYS_IN_WEEK) {
+                val weekDayView =
+                    WeekDayView(context, local.dayOfWeek)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    weekDayView.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                }
+                weekDayViews.add(weekDayView)
+                addView(weekDayView)
+                local = local.plusDays(1)
             }
-            weekDayViews.add(weekDayView)
-            addView(weekDayView)
-            local = local.plusDays(1)
         }
+
     }
 
     protected fun addDayView(
@@ -67,23 +95,32 @@ abstract class CalendarPagerView(
         addView(dayView, LayoutParams())
     }
 
-    protected fun resetAndGetWorkingCalendar(): LocalDate {
-        val fDayOfWeek =
-            WeekFields.of(firstDayOfWeek, 1).dayOfWeek()
-        val temp = firstViewDay!!.date.with(fDayOfWeek, 1)
-        val dow = temp.dayOfWeek.value
-        var delta: Int = firstDayOfWeek!!.value - dow
+    protected fun resetAndGetWorkingCalendar(): LocalDate? {
 
-        //If the delta is positive, we want to remove a week
-        val removeRow =
-            if (MaterialCalendarView.showOtherMonths(
-                    showOtherDates
-                )
-            ) delta >= 0 else delta > 0
-        if (removeRow) {
-            delta -= DEFAULT_DAYS_IN_WEEK
-        }
-        return temp.plusDays(delta.toLong())
+        return if (!isInEditMode) {
+            val now = LocalDate.now()
+
+            val fDayOfWeek = WeekFields.of(firstDayOfWeek, 1).dayOfWeek()
+
+            val temp = firstViewDay?.date?.with(fDayOfWeek, 1)
+            val dow = temp?.dayOfWeek?.value
+            var delta: Int? = firstDayOfWeek.let { d ->
+                dow?.let {
+                    d.value - it
+                }
+            }
+            delta?.let {
+                //If the delta is positive, we want to remove a week
+                val removeRow = if (MaterialCalendarView.showOtherMonths(showOtherDates)
+                ) delta >= 0 else delta > 0
+
+                if (removeRow) {
+                    delta -= DEFAULT_DAYS_IN_WEEK
+                }
+
+                temp?.plusDays(delta.toLong())
+            }
+        } else null
     }
 
     protected abstract fun buildDayViews(
@@ -360,6 +397,7 @@ abstract class CalendarPagerView(
         if (showWeekDays) {
             buildWeekDays(resetAndGetWorkingCalendar())
         }
+        @Suppress("LeakingThis")
         buildDayViews(dayViews, resetAndGetWorkingCalendar())
     }
 }

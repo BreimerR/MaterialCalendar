@@ -8,7 +8,7 @@ import org.threeten.bp.LocalDate
 /**
  * An imputable representation of a day on a calendar, based on [LocalDate].
  */
-public class CalendarDay : Parcelable {
+class CalendarDay : Parcelable {
     /**
      * Get this day as a [LocalDate]
      *

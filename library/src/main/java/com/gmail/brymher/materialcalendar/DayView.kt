@@ -49,7 +49,7 @@ class DayView(context: Context?, day: CalendarDay?) : AppCompatCheckedTextView(c
     private var selectionDrawable: Drawable? = null
     private var mCircleDrawable: Drawable? = null
     private var formatter = DayFormatter.DEFAULT
-    private var contentDescriptionFormatter = formatter
+    private var contentDescriptionFormatter: DayFormatter? = formatter
     private var isInRange = true
     private var isInMonth = true
     private var isDecoratedDisabled = false
@@ -98,12 +98,32 @@ class DayView(context: Context?, day: CalendarDay?) : AppCompatCheckedTextView(c
     }
 
     val label: String
-        get() = formatter.format(date!!)
+        get() {
+            var res = ""
+
+            date?.let {
+                res = formatter.format(it)
+            }
+
+            return res
+
+        }
 
     val contentDescriptionLabel: String
-        get() = if (contentDescriptionFormatter == null) formatter.format(date!!) else contentDescriptionFormatter!!.format(
-            date!!
-        )
+        get() {
+            var res: String? = ""
+
+            date?.let {
+                res =
+                    if (contentDescriptionFormatter == null) formatter.format(it) else contentDescriptionFormatter?.format(
+                        it
+                    )
+            }
+
+
+            return res ?: ""
+
+        }
 
 
     /**

@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -26,12 +27,12 @@ public class CalendarScrollBehavior extends ViewOffsetBehavior<RecyclerView> {
     }
 
     @Override
-    public boolean layoutDependsOn(CoordinatorLayout parent, RecyclerView child, View dependency) {
+    public boolean layoutDependsOn(@NonNull CoordinatorLayout parent,@NonNull RecyclerView child,@NonNull View dependency) {
         return dependency instanceof MaterialCalendarView;
     }
 
     @Override
-    protected void layoutChild(CoordinatorLayout parent, RecyclerView child, int layoutDirection) {
+    protected void layoutChild(@NonNull CoordinatorLayout parent,@NonNull RecyclerView child, int layoutDirection) {
         super.layoutChild(parent, child, layoutDirection);
         if (calendarHeight == 0) {
             final List<View> dependencies = parent.getDependencies(child);

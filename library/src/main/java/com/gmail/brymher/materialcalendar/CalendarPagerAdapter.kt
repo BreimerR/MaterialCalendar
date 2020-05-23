@@ -25,8 +25,10 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
         }
 
     var color: Int = R.color.mcv_text_date_light
-    var dateTextAppearance: Int? = null
-    var weekDayTextAppearance: Int? = null
+    private var dateTextAppearance: Int? = null
+    private var weekDayTextAppearance: Int? = null
+
+    fun getTextAppearance(): Int? = dateTextAppearance
 
     @MaterialCalendarView.ShowOtherDates
     private var showOtherDates = MaterialCalendarView.SHOW_DEFAULTS

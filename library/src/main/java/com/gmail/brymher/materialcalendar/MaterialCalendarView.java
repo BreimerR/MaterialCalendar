@@ -35,6 +35,7 @@ import com.gmail.brymher.materialcalendar.format.DayFormatter;
 import com.gmail.brymher.materialcalendar.format.MonthArrayTitleFormatter;
 import com.gmail.brymher.materialcalendar.format.TitleFormatter;
 import com.gmail.brymher.materialcalendar.format.WeekDayFormatter;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
@@ -292,10 +293,18 @@ public class MaterialCalendarView extends ViewGroup {
     public MaterialCalendarView(Context context) {
         this(context, null);
 
+        if (isInEditMode()) {
+            AndroidThreeTen.init(context);
+        }
+
     }
 
     public MaterialCalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        if (isInEditMode()) {
+            AndroidThreeTen.init(context);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //If we're on good Android versions, turn off clipping for cool effects
@@ -1031,7 +1040,7 @@ public class MaterialCalendarView extends ViewGroup {
      * @param formatter the new formatter, null for default
      */
     public void setDayFormatter(DayFormatter formatter) {
-        adapter.setDayFormatter(formatter == null ? DayFormatter.DEFAULT : formatter);
+        adapter.setDayFormatter(formatter == null ? DayFormatter.Companion.getDEFAULT() : formatter);
     }
 
     /**
@@ -1889,11 +1898,11 @@ public class MaterialCalendarView extends ViewGroup {
                 CalendarDay currentlySelectedDate = getSelectedDate();
                 if (calendarMode == CalendarMode.MONTHS && currentlySelectedDate != null) {
                     // Going from months to weeks
+
                     LocalDate lastVisibleCalendar = calendarDayToShow.getDate();
                     CalendarDay lastVisibleCalendarDay = CalendarDay.from(lastVisibleCalendar.plusDays(1));
                     if (currentlySelectedDate.equals(calendarDayToShow) ||
-                            (currentlySelectedDate.isAfter(calendarDayToShow) && currentlySelectedDate.isBefore(
-                                    lastVisibleCalendarDay))) {
+                            (currentlySelectedDate.isAfter(calendarDayToShow) && currentlySelectedDate.isBefore(lastVisibleCalendarDay))) {
                         // Currently selected date is within view, so center on that
                         calendarDayToShow = currentlySelectedDate;
                     }

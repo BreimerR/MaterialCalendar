@@ -29,7 +29,7 @@
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/previous_year"
         android:padding="@dimen/mcv_arrow_padding"
-        app:srcCompat="@drawable/mcv_action_previous" />
+        app:srcCompat="@drawable/ic_fast_reverse_inset" />
 
     <!--This should be a spinner-->
     <TextView
@@ -50,7 +50,7 @@
         android:background="?selectableItemBackgroundBorderless"
         android:contentDescription="@string/next_year"
         android:padding="@dimen/mcv_arrow_padding"
-        app:srcCompat="@drawable/mcv_action_next" />
+        app:srcCompat="@drawable/ic_fast_foward_inset" />
 
     <ImageButton
         android:id="@+id/next"

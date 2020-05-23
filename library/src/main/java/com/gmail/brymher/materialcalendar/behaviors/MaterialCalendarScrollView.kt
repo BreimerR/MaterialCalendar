@@ -12,7 +12,7 @@ class MaterialCalendarScrollView {
 
     class Behavior(context: Context, attrs: AttributeSet) :
         ViewOffsetBehavior<RecyclerView>(context, attrs) {
-        private var calendarHeight = 0
+        private var calendarHeight: Int? = null
 
         var calendarView: MaterialCalendarView? = null
 
@@ -21,10 +21,10 @@ class MaterialCalendarScrollView {
             child: RecyclerView,
             dependency: View
         ): Boolean {
-            var res = false
-            (if (dependency is MaterialCalendarView) dependency else null)?.let {
+            val res = dependency is MaterialCalendarView
+
+            if (res) {
                 calendarView = dependency as MaterialCalendarView
-                res = true
             }
 
             return res
@@ -37,10 +37,10 @@ class MaterialCalendarScrollView {
         ) {
             super.layoutChild(parent, child, layoutDirection)
 
-            if (calendarHeight == 0) calendarHeight = calendarView?.measuredHeight ?: 0
+            val height = if (calendarHeight == null) calendarView?.measuredHeight ?: 0 else 0
 
-            child.top = calendarHeight
-            child.bottom = child.bottom + calendarHeight
+            child.top = (calendarView?.bottom ?: 0)
+            child.bottom = child.bottom + height
         }
     }
 }
