@@ -4,78 +4,29 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import com.gmail.brymher.behaviors.ViewOffsetBehavior
 import com.gmail.brymher.materialcalendar.CalendarMode
 import com.gmail.brymher.materialcalendar.MaterialCalendarView
-
-import com.google.android.material.appbar.AppBarLayout
 import java.util.*
 
-class AppBarMaterialCalendarBehavior : CalendarBehavior {
-
-    var calendarLineHeight = 0
-    var weekCalendarHeight = 0
-    var monthCalendarHeight = 0
-    var listMaxOffset = 0
-    var velocityY = 0f
-    var canAutoScroll = true
-
-    constructor(context: Context) : super(context, null)
-
-    constructor (context: Context?, attrs: AttributeSet) : super(context, attrs)
-
-
-
-    val calendarHeight
-        get() = if (calendarMode == CalendarMode.WEEKS) weekCalendarHeight else monthCalendarHeight
-
-    val calendarBottom get() = calendarHeight + appBarHeight
-
-    var calendarView: MaterialCalendarView? = null
-
-    override fun layoutDependsOn(
-        parent: CoordinatorLayout,
-        child: MaterialCalendarView,
-        dependency: View
-    ): Boolean {
-        val res = dependency is AppBarLayout
-
-        if (res) appBarHeight = dependency.measuredHeight
-
-        return res
-    }
-
-    override fun layoutChild(
-        parent: CoordinatorLayout,
-        child: MaterialCalendarView,
-        layoutDirection: Int
+class AppBarMaterialCalendarBehavior(context: Context, attributeSet: AttributeSet) :
+    Behaviors.AppBarBehavior<MaterialCalendarView>(
+        context, attributeSet
     ) {
-        super.layoutChild(parent, child, layoutDirection)
 
-        child.top = appBarHeight
-        child.bottom = child.bottom + appBarHeight
 
-    }
+    var appBarHeight: Int = 0
 
-    override fun onStartNestedScroll(
-        coordinatorLayout: CoordinatorLayout,
-        child: MaterialCalendarView,
-        directTargetChild: View,
-        target: View,
-        axes: Int,
-        type: Int
-    ): Boolean {
-        return super.onStartNestedScroll(
-            coordinatorLayout,
-            child,
-            directTargetChild,
-            target,
-            axes,
-            type
-        )
-    }
+    var calendarMode: CalendarMode? = CalendarMode.MONTHS
+        protected set
+    var weekOfMonth = Calendar.getInstance()[Calendar.WEEK_OF_MONTH]
+    private var calendarLineHeight = 0
+    private var weekCalendarHeight = 0
+    private var monthCalendarHeight = 0
+    private var listMaxOffset = 0
+    private var velocityY = 0f
+    private var canAutoScroll = true
 
-    override fun setMonthMode(calendarView: MaterialCalendarView) {
+    fun setMonthMode(calendarView: MaterialCalendarView) {
         if (calendarMode == CalendarMode.MONTHS) {
             return
         }

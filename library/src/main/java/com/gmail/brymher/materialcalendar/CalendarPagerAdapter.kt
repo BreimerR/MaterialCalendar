@@ -255,8 +255,8 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
         minDate = min
         maxDate = max
         for (pagerView in currentViews) {
-            pagerView!!.setMinimumDate(min)
-            pagerView.setMaximumDate(max)
+            pagerView?.setMinimumDate(min)
+            pagerView?.setMaximumDate(max)
         }
         if (min == null) {
             min = CalendarDay.from(
@@ -356,7 +356,7 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
     }
 
     fun getItem(position: Int): CalendarDay? {
-        return rangeIndex!!.getItem(position)
+        return rangeIndex?.getItem(position)
     }
 
     fun getSelectedDates(): MutableList<CalendarDay> {

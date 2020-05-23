@@ -5,6 +5,7 @@ import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.math.MathUtils
 import androidx.core.view.GravityCompat
@@ -13,10 +14,10 @@ import com.gmail.brymher.behaviors.ViewOffsetBehavior
 import com.gmail.brymher.materialcalendar.MaterialCalendarView
 import com.google.android.material.appbar.AppBarLayout
 
-class MaterialCalendarScrollView {
+class Behaviors {
 
-    class Behavior(context: Context, attrs: AttributeSet) :
-        ViewOffsetBehavior<RecyclerView>(context, attrs) {
+    abstract class DependencyBehavior<T : View>(context: Context, attributeSet: AttributeSet) :
+        ViewOffsetBehavior<T>(context, attributeSet) {
 
         var tempRect1 = Rect()
         var tempRect2 = Rect()
@@ -25,62 +26,27 @@ class MaterialCalendarScrollView {
         private var verticalLayoutGap = 0
         private var overlayTop = 0
 
-        private var calendarHeight: Int? = null
-
-        var calendarView: MaterialCalendarView? = null
-
         override fun layoutDependsOn(
             parent: CoordinatorLayout,
-            child: RecyclerView,
+            child: T,
             dependency: View
         ): Boolean {
-            val res = dependency is MaterialCalendarView
-
-            if (res) {
-                calendarView = dependency as MaterialCalendarView
-                calendarHeight = dependency.measuredHeight
-            }
-
-            return res
+            return dependsOn(parent, child, dependency)
         }
 
-        /*
-                override fun layoutChild(
-                    parent: CoordinatorLayout,
-                    child: RecyclerView,
-                    layoutDirection: Int
-                ) {
-                    super.layoutChild(parent, child, layoutDirection)
+        abstract fun dependsOn(parent: CoordinatorLayout, child: T, dependency: View): Boolean
 
-                    val height = calendarView?.measuredHeight ?: 0
-
-
-                    child.top = (calendarView?.bottom ?: 0)
-                    child.bottom = child.height + height
-
-                }
-        */
-        fun findFirstDependency(views: List<View?>): MaterialCalendarView? {
-            var i = 0
-            val z = views.size
-            while (i < z) {
-                val view = views[i]
-                if (view is MaterialCalendarView) {
-                    return view
-                }
-                i++
-            }
-            return null
-        }
+        private var calendarHeight: Int? = null
 
         override fun layoutChild(
             parent: CoordinatorLayout,
-            child: RecyclerView,
+            child: T,
             layoutDirection: Int
         ) {
-            val dependencies =
-                parent.getDependencies(child)
-            val header: MaterialCalendarView? = findFirstDependency(dependencies)
+            val dependencies = parent.getDependencies(child)
+
+            val header: T? = findFirstDependency(dependencies)
+
             if (header != null) {
                 val lp = child.layoutParams as CoordinatorLayout.LayoutParams
                 val available: Rect = tempRect1
@@ -113,6 +79,24 @@ class MaterialCalendarScrollView {
                 super.layoutChild(parent, child, layoutDirection)
                 verticalLayoutGap = 0
             }
+
+
+        }
+
+        abstract fun checkView(view: View?): Boolean
+
+        fun findFirstDependency(views: List<View?>): T? {
+            var i = 0
+            val z = views.size
+            while (i < z) {
+                val view = views[i]
+                if (checkView(view)) {
+                    @Suppress("UNCHECKED_CAST")
+                    return view as T
+                }
+                i++
+            }
+            return null
         }
 
         fun getOverlapPixelsForOffset(header: View?): Int {
@@ -129,6 +113,52 @@ class MaterialCalendarScrollView {
 
         private fun getOverlapRatioForOffset(header: View?): Float {
             return 1f
+        }
+    }
+
+    abstract class AppBarBehavior<T : View>(context: Context, attributeSet: AttributeSet) :
+        DependencyBehavior<T>(context, attributeSet) {
+
+        override fun dependsOn(
+            parent: CoordinatorLayout,
+            child: T,
+            dependency: View
+        ): Boolean = checkView(dependency)
+
+        override fun checkView(view: View?): Boolean = view is AppBarLayout
+
+    }
+
+    class Below : ViewOffsetBehavior<ConstraintLayout> {
+
+        var calendarHeight = 0
+
+        constructor() : super()
+
+        constructor(context: Context, attributeSet: AttributeSet) : super(context, attributeSet)
+
+        override fun layoutChild(
+            parent: CoordinatorLayout,
+            child: ConstraintLayout,
+            layoutDirection: Int
+        ) {
+
+            super.layoutChild(parent, child, layoutDirection)
+
+            child.top = calendarHeight
+            child.bottom = child.bottom + calendarHeight
+        }
+
+        override fun layoutDependsOn(
+            parent: CoordinatorLayout,
+            child: ConstraintLayout,
+            dependency: View
+        ): Boolean {
+            val b = dependency is MaterialCalendarView
+
+            if (b) calendarHeight = dependency.measuredHeight
+
+            return b
         }
     }
 }

@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.gmail.brymher.behaviors.ViewOffsetBehavior
 import com.gmail.brymher.materialcalendar.CalendarMode
 import com.gmail.brymher.materialcalendar.MaterialCalendarView
-import com.google.android.material.appbar.AppBarLayout
 import java.util.*
 
 
@@ -21,8 +20,6 @@ import java.util.*
  */
 open class CalendarBehavior(context: Context?, attrs: AttributeSet?) :
     ViewOffsetBehavior<MaterialCalendarView>(context, attrs) {
-
-    var appBarHeight: Int = 0
 
     var calendarMode: CalendarMode? = CalendarMode.MONTHS
         protected set
@@ -41,30 +38,6 @@ open class CalendarBehavior(context: Context?, attrs: AttributeSet?) :
         axes: Int, type: Int
     ): Boolean {
         return axes and ViewCompat.SCROLL_AXIS_VERTICAL != 0 && !target.canScrollVertically(-1)
-    }
-
-    override fun layoutDependsOn(
-        parent: CoordinatorLayout,
-        child: MaterialCalendarView,
-        dependency: View
-    ): Boolean {
-        val res = dependency is AppBarLayout
-
-        if (res) appBarHeight = dependency.measuredHeight
-
-        return res
-    }
-
-    override fun layoutChild(
-        parent: CoordinatorLayout,
-        child: MaterialCalendarView,
-        layoutDirection: Int
-    ) {
-        super.layoutChild(parent, child, layoutDirection)
-
-        child.top = appBarHeight
-        child.bottom = child.bottom + appBarHeight
-
     }
 
     override fun onNestedPreScroll(
@@ -164,14 +137,12 @@ open class CalendarBehavior(context: Context?, attrs: AttributeSet?) :
                         target is RecyclerView
                     ) {
                         canAutoScroll = false
-                        val recyclerView =
-                            target
                         val delta = target.getTop() - scroller.currY
-                        recyclerView.startNestedScroll(
+                        target.startNestedScroll(
                             ViewCompat.SCROLL_AXIS_VERTICAL,
                             ViewCompat.TYPE_TOUCH
                         )
-                        recyclerView.dispatchNestedPreScroll(
+                        target.dispatchNestedPreScroll(
                             0, delta, IntArray(2), IntArray(2), ViewCompat.TYPE_TOUCH
                         )
                         ViewCompat.postOnAnimation(child, this)

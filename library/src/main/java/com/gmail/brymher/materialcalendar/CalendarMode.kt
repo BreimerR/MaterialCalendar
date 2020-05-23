@@ -14,7 +14,7 @@ public enum class CalendarMode(
     /**
      * Month Mode to display an entire month per page.
      */
-    MONTHS(6),
+    MONTHS(5),
 
     /**
      * Week mode that shows the calendar week by week.
