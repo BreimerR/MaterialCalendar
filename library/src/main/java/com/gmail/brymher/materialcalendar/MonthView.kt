@@ -2,6 +2,7 @@ package com.gmail.brymher.materialcalendar
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.AttributeSet
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDate
 
@@ -17,7 +18,7 @@ class MonthView : CalendarPagerView {
 
     constructor(
         view: MaterialCalendarView,
-        month: CalendarDay,
+        month: CalendarDay?,
         firstDayOfWeek: DayOfWeek,
         showWeekDays: Boolean
     ) : super(
@@ -26,6 +27,17 @@ class MonthView : CalendarPagerView {
         firstDayOfWeek,
         showWeekDays
     )
+
+    constructor(context: Context) : super(context)
+
+    constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
+
+    constructor(context: Context, attrs: AttributeSet, defStyleRes: Int) : super(
+        context,
+        attrs,
+        defStyleRes
+    )
+
 
     override fun buildDayViews(
         dayViews: MutableCollection<DayView>?,

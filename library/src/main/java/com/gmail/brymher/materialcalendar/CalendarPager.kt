@@ -20,12 +20,12 @@ class CalendarPager : ViewPager {
      */
     var isPagingEnabled = true
 
-    constructor(context: Context) : super(context) {}
+    constructor(context: Context) : super(context)
+
     constructor(
         context: Context,
         attrs: AttributeSet?
-    ) : super(context, attrs) {
-    }
+    ) : super(context, attrs)
 
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         return isPagingEnabled && super.onInterceptTouchEvent(ev)

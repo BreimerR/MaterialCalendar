@@ -8,7 +8,6 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
-import android.widget.Toast
 import com.gmail.brymher.materialcalendar.format.DayFormatter
 import com.gmail.brymher.materialcalendar.format.WeekDayFormatter
 import org.threeten.bp.DayOfWeek
@@ -21,9 +20,11 @@ abstract class CalendarPagerView : ViewGroup, View.OnClickListener, OnLongClickL
 
 
     lateinit var mcv: MaterialCalendarView
-    var firstViewDay: CalendarDay? = CalendarDay.today()
+
+    var firstViewDay: CalendarDay? = CalendarDay.today
 
     private var firstDayOfWeek: DayOfWeek = DayOfWeek.SUNDAY
+
     var showWeekDays: Boolean = true
 
     constructor(
@@ -37,6 +38,8 @@ abstract class CalendarPagerView : ViewGroup, View.OnClickListener, OnLongClickL
         this.firstViewDay = firstViewDay
         this.showWeekDays = showWeekDays
     }
+
+    constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
 
@@ -86,10 +89,9 @@ abstract class CalendarPagerView : ViewGroup, View.OnClickListener, OnLongClickL
         dayViews: MutableCollection<DayView>?,
         temp: LocalDate?
     ) {
-        val day =
-            CalendarDay.from(temp)
-        val dayView =
-            DayView(context, day)
+        val day = CalendarDay.from(temp)
+        val dayView = DayView(context, day)
+
         dayView.setOnClickListener(this)
         dayView.setOnLongClickListener(this)
         dayViews?.add(dayView)
@@ -127,6 +129,7 @@ abstract class CalendarPagerView : ViewGroup, View.OnClickListener, OnLongClickL
     )
 
     protected abstract fun isDayEnabled(day: CalendarDay?): Boolean
+
     fun setDayViewDecorators(results: List<DecoratorResult>?) {
         decoratorResults.clear()
         if (results != null) {
@@ -215,6 +218,7 @@ abstract class CalendarPagerView : ViewGroup, View.OnClickListener, OnLongClickL
     }
 
     protected fun updateUi() {
+
         for (dayView in dayViews) {
             val day = dayView.date
             dayView.setupSelection(

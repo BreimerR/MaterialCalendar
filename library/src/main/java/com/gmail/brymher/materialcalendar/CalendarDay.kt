@@ -104,14 +104,13 @@ class CalendarDay : Parcelable {
     }
 
     override fun toString(): String {
-        return ("CalendarDay{" + date.year + "-" + date.monthValue + "-"
-                + date.dayOfMonth + "}")
+        return "CalendarDay{${date.year}-${date.monthValue}-${date.dayOfMonth}}"
     }
 
-    /*
+    /**
      * Parcelable Stuff
      */
-    constructor(`in`: Parcel) : this(`in`.readInt(), `in`.readInt(), `in`.readInt()) {}
+    constructor(parcel: Parcel) : this(parcel.readInt(), parcel.readInt(), parcel.readInt()) {}
 
     override fun describeContents(): Int {
         return 0
@@ -129,10 +128,11 @@ class CalendarDay : Parcelable {
          *
          * @return CalendarDay set to today's date
          */
+
+
         @JvmStatic
-        fun today(): CalendarDay {
-            return from(LocalDate.now())!!
-        }
+        val today
+            get() = from(LocalDate.now())
 
         /**
          * Get a new instance set to the specified day
@@ -146,6 +146,15 @@ class CalendarDay : Parcelable {
         fun from(year: Int, month: Int, day: Int): CalendarDay {
             return CalendarDay(year, month, day)
         }
+
+        @JvmStatic
+        fun from(year: Int?, month: Int?, day: Int?): CalendarDay {
+            return CalendarDay(year ?: 2019, month ?: 0, day ?: 1)
+        }
+
+        @JvmStatic
+        val previousMonth
+            get() = from(today?.year, (today?.month ?: 2) - 1, 1)
 
         /**
          * Get a new instance set to the specified day

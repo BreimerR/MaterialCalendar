@@ -9,7 +9,7 @@ import java.util.*
 class StateBuilder {
 
     var calendarMode: CalendarMode
-    var firstDayOfWeek: DayOfWeek
+    var firstDayOfWeek: DayOfWeek = DayOfWeek.SUNDAY
         private set
     var cacheCurrentPosition = false
     var minDate: CalendarDay? = null

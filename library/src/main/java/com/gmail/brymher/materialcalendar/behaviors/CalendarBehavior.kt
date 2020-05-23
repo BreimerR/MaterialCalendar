@@ -185,9 +185,11 @@ open class CalendarBehavior(context: Context?, attrs: AttributeSet?) :
             return
         }
         calendarMode = null
-        calendarView.state().edit()
-            .setCalendarDisplayMode(CalendarMode.MONTHS)
-            .commit(calendarView)
+        calendarView.state()?.apply {
+            edit()
+                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                .commit(calendarView)
+        }
         setTopAndBottomOffset(-calendarLineHeight * (weekOfMonth - 1))
         calendarMode = CalendarMode.MONTHS
     }
@@ -197,9 +199,11 @@ open class CalendarBehavior(context: Context?, attrs: AttributeSet?) :
             return
         }
         calendarMode = null
-        calendarView.state().edit()
-            .setCalendarDisplayMode(CalendarMode.WEEKS)
-            .commit(calendarView)
+        calendarView.state()?.apply {
+            edit()
+                .setCalendarDisplayMode(CalendarMode.WEEKS)
+                .commit(calendarView)
+        }
         setTopAndBottomOffset(0)
         calendarMode = CalendarMode.WEEKS
     }

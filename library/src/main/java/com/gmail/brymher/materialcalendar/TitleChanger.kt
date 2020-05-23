@@ -2,34 +2,42 @@ package com.gmail.brymher.materialcalendar
 
 import android.R
 import android.animation.Animator
+import android.os.Build
 import android.text.TextUtils
 import android.util.TypedValue
 import android.view.animation.DecelerateInterpolator
 import android.view.animation.Interpolator
 import android.widget.TextView
 import com.gmail.brymher.materialcalendar.format.TitleFormatter
+import java.util.*
 
-class TitleChanger(private val title: TextView) {
-    private var titleFormatter = TitleFormatter.DEFAULT
+class TitleChanger(private val title: TextView?) {
+    var titleFormatter: TitleFormatter? = TitleFormatter.DEFAULT
     private val animDelay: Int
-    private val animDuration: Int
+    val animDuration: Int
     private val translate: Int
-    private val interpolator: Interpolator = DecelerateInterpolator(2f)
+    val interpolator: Interpolator = DecelerateInterpolator(2f)
     var orientation = MaterialCalendarView.VERTICAL
     private var lastAnimTime: Long = 0
-    var previousMonth: CalendarDay = CalendarDay.today()
+    val today = CalendarDay.today
+
+    var previousMonth: CalendarDay? = CalendarDay.previousMonth
+
+    val currentTime get() = System.currentTimeMillis()
 
     fun change(currentMonth: CalendarDay?) {
-        val currentTime = System.currentTimeMillis()
+
+        val time = currentTime
+
         if (currentMonth == null) {
             return
         }
-        if (TextUtils.isEmpty(title.text) || currentTime - lastAnimTime < animDelay) {
-            doChange(currentTime, currentMonth, false)
+        if (TextUtils.isEmpty(title?.text) || time - lastAnimTime < animDelay) {
+            doChange(time, currentMonth, false)
         }
-        if (currentMonth.equals(previousMonth) ||
-            (currentMonth.month == previousMonth.month
-                    && currentMonth.year == previousMonth.year)
+        if (currentMonth == previousMonth || (
+                    currentMonth.month == previousMonth?.month && currentMonth.year == previousMonth?.year
+                    )
         ) {
             return
         }
@@ -41,64 +49,73 @@ class TitleChanger(private val title: TextView) {
         currentMonth: CalendarDay,
         animate: Boolean
     ) {
-        title.animate().cancel()
+        title?.animate()?.cancel()
         doTranslation(title, 0)
-        title.alpha = 1f
+        title?.alpha = 1f
         lastAnimTime = now
-        val newTitle = titleFormatter.format(currentMonth)
+
+        val newTitle = titleFormatter?.format(currentMonth)
+
         if (!animate) {
-            title.text = newTitle
+            title?.text = newTitle
         } else {
             val translation =
-                translate * if (previousMonth.isBefore(currentMonth)) 1 else -1
-            val viewPropertyAnimator = title.animate()
+                translate * if (previousMonth?.isBefore(currentMonth) == true) 1 else -1
+
+            val viewPropertyAnimator = title?.animate()
+
             if (orientation == MaterialCalendarView.HORIZONTAL) {
-                viewPropertyAnimator.translationX(translation * (-1).toFloat())
+                viewPropertyAnimator?.translationX(translation * (-1).toFloat())
             } else {
-                viewPropertyAnimator.translationY(translation * (-1).toFloat())
+                viewPropertyAnimator?.translationY(translation * (-1).toFloat())
             }
-            viewPropertyAnimator
-                .alpha(0f)
-                .setDuration(animDuration.toLong())
-                .setInterpolator(interpolator)
-                .setListener(object : AnimatorListener() {
+            viewPropertyAnimator?.apply {
+                alpha(0f)
+                duration = animDuration.toLong()
+                if (Build.VERSION.SDK_INT >= 18) {
+                    interpolator = this@TitleChanger.interpolator
+                }
+
+                setListener(object : AnimatorListener() {
                     override fun onAnimationCancel(animator: Animator) {
                         doTranslation(title, 0)
-                        title.alpha = 1f
+                        title?.alpha = 1f
                     }
 
                     override fun onAnimationEnd(animator: Animator) {
-                        title.text = newTitle
+                        title?.text = newTitle
+
                         doTranslation(title, translation)
-                        val propertyAnimator = title.animate()
-                        if (orientation == MaterialCalendarView.HORIZONTAL) {
-                            propertyAnimator.translationX(0f)
-                        } else {
-                            propertyAnimator.translationY(0f)
+
+                        title?.animate()?.apply {
+                            if (orientation == MaterialCalendarView.HORIZONTAL) {
+                                translationX(0f)
+                            } else {
+                                translationY(0f)
+                            }
+                            alpha(1f)
+                            duration = animDuration.toLong()
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                                interpolator = this@TitleChanger.interpolator
+                            }
+                            setListener(AnimatorListener())
+                            start()
                         }
-                        propertyAnimator
-                            .alpha(1f)
-                            .setDuration(animDuration.toLong())
-                            .setInterpolator(interpolator)
-                            .setListener(AnimatorListener())
-                            .start()
                     }
                 }).start()
+            }
+
         }
         previousMonth = currentMonth
     }
 
-    private fun doTranslation(title: TextView, translate: Int) {
+    private fun doTranslation(title: TextView?, translate: Int) {
         if (orientation == MaterialCalendarView.HORIZONTAL) {
-            title.translationX = translate.toFloat()
+            title?.translationX = translate.toFloat()
         } else {
-            title.translationY = translate.toFloat()
+            title?.translationY = translate.toFloat()
         }
-    }
-
-    fun setTitleFormatter(titleFormatter: TitleFormatter?) {
-        this.titleFormatter =
-            titleFormatter ?: TitleFormatter.DEFAULT
     }
 
     companion object {
@@ -107,13 +124,13 @@ class TitleChanger(private val title: TextView) {
     }
 
     init {
-        val res = title.resources
+        val res = title?.resources
         animDelay = DEFAULT_ANIMATION_DELAY
-        animDuration = res.getInteger(R.integer.config_shortAnimTime) / 2
+        animDuration = (res?.getInteger(R.integer.config_shortAnimTime) ?: 500) / 2
         translate = TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP,
             DEFAULT_Y_TRANSLATION_DP.toFloat(),
-            res.displayMetrics
+            res?.displayMetrics
         ).toInt()
     }
 }

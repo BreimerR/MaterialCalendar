@@ -18,7 +18,7 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
 ) : PagerAdapter() {
 
     private val currentViews: ArrayDeque<V> = ArrayDeque()
-    val today: CalendarDay = CalendarDay.today()
+    val today: CalendarDay? = CalendarDay.today
     var titleFormatter: TitleFormatter? = TitleFormatter.DEFAULT
         set(value) {
             field = value ?: TitleFormatter.DEFAULT
@@ -141,7 +141,7 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val pagerView = createView(position)
-        pagerView!!.contentDescription = mcv.getCalendarContentDescription()
+        pagerView!!.contentDescription = mcv.calendarContentDescription
         pagerView.alpha = 0f
         pagerView.setSelectionEnabled(selectionEnabled)
         pagerView.weekDayFormatter = weekDayFormatter
@@ -260,16 +260,16 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
         }
         if (min == null) {
             min = CalendarDay.from(
-                today.year - 200,
-                today.month,
-                today.day
+                (today?.year ?: 1970) - 200,
+                today?.month,
+                today?.day
             )
         }
         if (max == null) {
             max = CalendarDay.from(
-                today.year + 200,
-                today.month,
-                today.day
+                (today?.year ?: 1970) + 200,
+                today?.month,
+                today?.day
             )
         }
         rangeIndex = createRangeIndex(min, max)
@@ -363,11 +363,11 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
         return Collections.unmodifiableList(selectedDates)
     }
 
-    protected fun getDateTextAppearance(): Int {
+    fun getDateTextAppearance(): Int {
         return (if (dateTextAppearance == null) 0 else dateTextAppearance)!!
     }
 
-    protected fun getWeekDayTextAppearance(): Int {
+    fun getWeekDayTextAppearance(): Int {
         return if (weekDayTextAppearance == null) 0 else weekDayTextAppearance!!
     }
 
