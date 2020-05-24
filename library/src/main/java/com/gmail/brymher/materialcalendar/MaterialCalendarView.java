@@ -35,6 +35,8 @@ import com.gmail.brymher.materialcalendar.format.DayFormatter;
 import com.gmail.brymher.materialcalendar.format.MonthArrayTitleFormatter;
 import com.gmail.brymher.materialcalendar.format.TitleFormatter;
 import com.gmail.brymher.materialcalendar.format.WeekDayFormatter;
+import com.google.android.material.resources.TextAppearance;
+import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import org.threeten.bp.DayOfWeek;
 import org.threeten.bp.LocalDate;
@@ -188,7 +190,7 @@ public class MaterialCalendarView extends ViewGroup {
     private static final int DEFAULT_MAX_WEEKS = 6;
     private static final int DAY_NAMES_ROW = 1;
 
-    private final TitleChanger titleChanger;
+    private TitleChanger titleChanger;
 
     private final TextView title;
     private final ImageView buttonPast;
@@ -285,7 +287,7 @@ public class MaterialCalendarView extends ViewGroup {
     private int selectionMode = SELECTION_MODE_SINGLE;
     private boolean allowClickDaysOutsideCurrentMonth = true;
     private DayOfWeek firstDayOfWeek;
-    private boolean showWeekDays;
+    private boolean showWeekDays = true;
 
     private State state;
 
@@ -296,6 +298,8 @@ public class MaterialCalendarView extends ViewGroup {
 
     public MaterialCalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+        if (isInEditMode()) AndroidThreeTen.init(context);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //If we're on good Android versions, turn off clipping for cool effects
@@ -325,7 +329,7 @@ public class MaterialCalendarView extends ViewGroup {
         btnNextYear.setOnClickListener(onClickListener);
         btnPrevYear.setOnClickListener(onClickListener);
 
-        titleChanger = new TitleChanger(title);
+        if (!isInEditMode()) titleChanger = new TitleChanger(title);
 
         pager.addOnPageChangeListener(pageChangeListener);
         pager.setPageTransformer(false, new ViewPager.PageTransformer() {
@@ -480,12 +484,30 @@ public class MaterialCalendarView extends ViewGroup {
 
         if (isInEditMode()) {
             removeView(pager);
-            MonthView monthView = new MonthView(this, currentMonth, getFirstDayOfWeek(), true);
-            monthView.setSelectionColor(getSelectionColor());
-            monthView.setDateTextAppearance(adapter.getDateTextAppearance());
-            monthView.setWeekDayTextAppearance(adapter.getWeekDayTextAppearance());
-            monthView.setShowOtherDates(getShowOtherDates());
-            addView(monthView, new LayoutParams(calendarMode.getVisibleWeeksCount() + DAY_NAMES_ROW));
+            if (currentMonth != null && getFirstDayOfWeek() != null) {
+                MonthView monthView = new MonthView(this, currentMonth, getFirstDayOfWeek(), true);
+                monthView.setSelectionColor(getSelectionColor());
+                if (adapter != null) {
+                    int dateTextAppearance = 0;
+
+                    if (adapter.getDateTextAppearance() != null) {
+                        dateTextAppearance = adapter.getDateTextAppearance();
+                    }
+                    int weekDayTextAppearance = 0;
+
+                    if (adapter.getWeekDayTextAppearance() != null) {
+                        weekDayTextAppearance = adapter.getWeekDayTextAppearance();
+                    }
+
+                    monthView.setDateTextAppearance(dateTextAppearance);
+                    monthView.setWeekDayTextAppearance(weekDayTextAppearance);
+                }
+
+
+                monthView.setShowOtherDates(getShowOtherDates());
+                addView(monthView, new LayoutParams(calendarMode.getVisibleWeeksCount() + DAY_NAMES_ROW));
+            }
+
         }
     }
 
@@ -511,7 +533,10 @@ public class MaterialCalendarView extends ViewGroup {
     }
 
     private void updateUi() {
-        titleChanger.change(currentMonth);
+        if (titleChanger != null) {
+            titleChanger.change(currentMonth);
+        }
+
         enableView(buttonPast, canGoBack());
         enableView(buttonFuture, canGoForward());
     }
@@ -692,7 +717,11 @@ public class MaterialCalendarView extends ViewGroup {
      * @return true if there is a future month that can be shown
      */
     public boolean canGoForward() {
-        return pager.getCurrentItem() < (adapter.getCount() - 1);
+        if (adapter != null) {
+            return pager.getCurrentItem() < (adapter.getCount() - 1);
+        }
+
+        return false;
     }
 
     /**
@@ -964,8 +993,13 @@ public class MaterialCalendarView extends ViewGroup {
         if (day == null) {
             return;
         }
-        int index = adapter.getIndexForDay(day);
-        pager.setCurrentItem(index, useSmoothScroll);
+
+        if (adapter != null) {
+            int index = adapter.getIndexForDay(day);
+            pager.setCurrentItem(index, useSmoothScroll);
+        }
+
+
         updateUi();
     }
 
@@ -1731,13 +1765,20 @@ public class MaterialCalendarView extends ViewGroup {
     }
 
     private int getWeekCountBasedOnMode() {
-        int weekCount = calendarMode.getVisibleWeeksCount();
-        final boolean isInMonthsMode = calendarMode.equals(CalendarMode.MONTHS);
-        if (isInMonthsMode && mDynamicHeightEnabled && adapter != null && pager != null) {
-            final LocalDate cal = adapter.getItem(pager.getCurrentItem()).getDate();
-            final LocalDate tempLastDay = cal.withDayOfMonth(cal.lengthOfMonth());
-            weekCount = tempLastDay.get(WeekFields.of(firstDayOfWeek, 1).weekOfMonth());
+        int weekCount = CalendarMode.MONTHS.getVisibleWeeksCount();
+
+        if (calendarMode != null) {
+            weekCount = calendarMode.getVisibleWeeksCount();
+
+            final boolean isInMonthsMode = calendarMode.equals(CalendarMode.MONTHS);
+            if (isInMonthsMode && mDynamicHeightEnabled && adapter != null && pager != null) {
+                final LocalDate cal = adapter.getItem(pager.getCurrentItem()).getDate();
+                final LocalDate tempLastDay = cal.withDayOfMonth(cal.lengthOfMonth());
+                weekCount = tempLastDay.get(WeekFields.of(firstDayOfWeek, 1).weekOfMonth());
+            }
         }
+
+
         return showWeekDays ? weekCount + DAY_NAMES_ROW : weekCount;
     }
 

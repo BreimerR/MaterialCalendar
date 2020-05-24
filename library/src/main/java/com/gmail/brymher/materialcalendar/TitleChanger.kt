@@ -10,8 +10,7 @@ import android.widget.TextView
 import com.gmail.brymher.materialcalendar.format.TitleFormatter
 
 class TitleChanger(private val title: TextView) {
-    private var titleFormatter =
-        TitleFormatter.DEFAULT
+    private var titleFormatter = TitleFormatter.DEFAULT
     private val animDelay: Int
     private val animDuration: Int
     private val translate: Int

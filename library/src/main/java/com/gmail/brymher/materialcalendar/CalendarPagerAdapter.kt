@@ -26,7 +26,13 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
 
     var color: Int = R.color.mcv_text_date_light
     var dateTextAppearance: Int? = null
+        get() = if (field == null) 0 else field
+
     var weekDayTextAppearance: Int? = null
+        get() {
+            return if (field == null) 0 else field
+        }
+
 
     @MaterialCalendarView.ShowOtherDates
     private var showOtherDates = MaterialCalendarView.SHOW_DEFAULTS
@@ -361,13 +367,6 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
         return Collections.unmodifiableList(selectedDates)
     }
 
-    protected fun getDateTextAppearance(): Int {
-        return (if (dateTextAppearance == null) 0 else dateTextAppearance)!!
-    }
-
-    protected fun getWeekDayTextAppearance(): Int {
-        return if (weekDayTextAppearance == null) 0 else weekDayTextAppearance!!
-    }
 
     init {
         currentViews.iterator()
