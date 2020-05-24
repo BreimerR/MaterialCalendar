@@ -18,7 +18,7 @@ class MonthPagerAdapter(mcv: MaterialCalendarView?) : CalendarPagerAdapter<Month
             getItem(position),
             mcv.firstDayOfWeek,
             //was showWeekDays
-            isShowWeekDays
+            showWeekDays
         )
     }
 

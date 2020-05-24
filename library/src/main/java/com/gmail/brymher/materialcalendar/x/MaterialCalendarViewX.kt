@@ -1,3 +1,4 @@
+/*
 package com.gmail.brymher.materialcalendar;
 
 import android.annotation.SuppressLint
@@ -42,6 +43,7 @@ import kotlin.math.abs
 import kotlin.math.sqrt
 
 
+*/
 /**
  *
  *
@@ -67,8 +69,9 @@ import kotlin.math.sqrt
  * For example, 600px isn't divisible by 7, so a tile size of 85 is choosen, making the calendar
  * 595px wide. The extra 5px are distributed left and right to get to 600px.
  *
- */
-class MaterialCalendarView : ViewGroup {
+ *//*
+
+class MaterialCalendarViewX : ViewGroup {
 
     var showTopBar = true
 
@@ -77,15 +80,19 @@ class MaterialCalendarView : ViewGroup {
     private val defaultTileSize
         get() = dpToPx(DEFAULT_TILE_SIZE_DP)
 
-    /**
+    */
+/**
      * @return the height of tiles in pixels
-     */
+     *//*
+
     var tileHeight = INVALID_TILE_DIMENSION
-        /**
+        */
+/**
          * Set the height of each tile that makes up the calendar.
          *
          * @param height the new height for each tile in pixels
-         */
+         *//*
+
         set(height: Int) {
             if (height > INVALID_TILE_DIMENSION) {
                 field = height
@@ -94,12 +101,14 @@ class MaterialCalendarView : ViewGroup {
         }
 
 
-    /**
+    */
+/**
      * [IntDef] annotation for selection mode.
      *
      * @see .setSelectionMode
      * @see .getSelectionMode
-     */
+     *//*
+
     @Retention(RetentionPolicy.SOURCE)
     @IntDef(
         SELECTION_MODE_NONE,
@@ -109,12 +118,14 @@ class MaterialCalendarView : ViewGroup {
     )
     annotation class SelectionMode
 
-    /**
+    */
+/**
      * [IntDef] annotation for showOtherDates.
      *
      * @see .setShowOtherDates
      * @see .getShowOtherDates
-     */
+     *//*
+
     @SuppressLint("UniqueConstants")
     @kotlin.annotation.Retention(AnnotationRetention.SOURCE)
     @IntDef(
@@ -150,18 +161,22 @@ class MaterialCalendarView : ViewGroup {
 
     val topbar: LinearLayout? get() = content.findViewById(R.id.header)
 
-    /**
+    */
+/**
      * Get the current [CalendarMode] set of the Calendar.
      *
      * @return Whichever mode the calendar is currently in.
-     */
+     *//*
+
     var calendarMode: CalendarMode? by lazyVar {
         CalendarMode.MONTHS
     }
 
-    /**
+    */
+/**
      * Used for the dynamic calendar height.
-     */
+     *//*
+
     var mDynamicHeightEnabled = false
     val dayViewDecorators = ArrayList<DayViewDecorator>()
 
@@ -226,11 +241,13 @@ class MaterialCalendarView : ViewGroup {
     private var monthListener: OnMonthChangedListener? = null
     private var rangeListener: OnRangeSelectedListener? = null
 
-    /**
+    */
+/**
      * Get content description for calendar
      *
      * @return calendar's content description
-     */
+     *//*
+
     var calendarContentDescription: CharSequence? = null
         get() {
             return (if (field != null) field else context.getString(
@@ -240,15 +257,19 @@ class MaterialCalendarView : ViewGroup {
 
     private var accentColor = 0
 
-    /**
+    */
+/**
      * @return the width of tiles in pixels
-     */
+     *//*
+
     var tileWidth = INVALID_TILE_DIMENSION
-        /**
+        */
+/**
          * Set the width of each tile that makes up the calendar.
          *
          * @param width the new width for each tile in pixels
-         */
+         *//*
+
         set(width: Int) {
             if (width > INVALID_TILE_DIMENSION) {
                 field = width
@@ -257,7 +278,8 @@ class MaterialCalendarView : ViewGroup {
         }
 
 
-    /**
+    */
+/**
      * Get the current selection mode. The default mode is [.SELECTION_MODE_SINGLE]
      *
      * @return the current selection mode
@@ -269,10 +291,12 @@ class MaterialCalendarView : ViewGroup {
      * @see .SELECTION_MODE_MULTIPLE
      *
      * @see .SELECTION_MODE_RANGE
-     */
+     *//*
+
     @SelectionMode
     var selectionMode = SELECTION_MODE_SINGLE
-        /**
+        */
+/**
          * Change the selection mode of the calendar. The default mode is [ ][.SELECTION_MODE_SINGLE]
          *
          * @param mode the selection mode to change to. This must be one of
@@ -287,7 +311,8 @@ class MaterialCalendarView : ViewGroup {
          * @see .SELECTION_MODE_MULTIPLE
          *
          * @see .SELECTION_MODE_RANGE
-         */
+         *//*
+
         set(@SelectionMode mode: Int) {
             @SelectionMode val oldMode = field
             field = mode
@@ -327,9 +352,11 @@ class MaterialCalendarView : ViewGroup {
         }
     private var allowClickDaysOutsideCurrentMonth = true
 
-    /**
+    */
+/**
      * @return The first day of the week as a [Calendar] day constant.
-     */
+     *//*
+
     var firstDayOfWeekInt = -1
         set(value) {
             field = value
@@ -343,9 +370,11 @@ class MaterialCalendarView : ViewGroup {
             field = value
         }
 
-    /**
+    */
+/**
      * @return true if the week days names are shown
-     */
+     *//*
+
     var isShowWeekDays = false
         private set
     private var state: State? = null
@@ -399,41 +428,49 @@ class MaterialCalendarView : ViewGroup {
     }
 
 
-    /**
+    */
+/**
      * Go to previous month or week without using the button [.buttonPast]. Should only go to
      * previous if [.canGoBack] is true, meaning it's possible to go to the previous month
      * or week.
-     */
+     *//*
+
     fun goToPrevious() {
         if (canGoBack()) {
             pager!!.setCurrentItem(pager.currentItem - 1, true)
         }
     }
 
-    /**
+    */
+/**
      * Go to next month or week without using the button [.buttonFuture]. Should only go to
      * next if [.canGoForward] is enabled, meaning it's possible to go to the next month or
      * week.
-     */
+     *//*
+
     fun goToNext() {
         if (canGoForward()) {
             pager.setCurrentItem(pager.currentItem + 1, true)
         }
     }
 
-    /**
+    */
+/**
      * Use [.getTileWidth] or [.getTileHeight] instead. This method is deprecated
      * and will just return the largest of the two sizes.
      *
      * @return tile height or width, whichever is larger
-     */
-    /**
+     *//*
+
+    */
+/**
      * Set the size of each tile that makes up the calendar.
      * Each day is 1 tile, so the widget is 7 tiles wide and 7 or 8 tiles tall
      * depending on the visibility of the [.topbar].
      *
      * @param size the new size for each tile in pixels
-     */
+     *//*
+
     @get:Deprecated("")
     var tileSize: Int
         get() = Math.max(tileHeight, tileWidth)
@@ -445,28 +482,34 @@ class MaterialCalendarView : ViewGroup {
             }
         }
 
-    /**
+    */
+/**
      * @param tileSizeDp the new size for each tile in dips
      * @see .setTileSize
-     */
+     *//*
+
     fun setTileSizeDp(tileSizeDp: Int) {
         tileSize = dpToPx(tileSizeDp)
     }
 
 
-    /**
+    */
+/**
      * @param tileHeightDp the new height for each tile in dips
      * @see .setTileHeight
-     */
+     *//*
+
     fun setTileHeightDp(tileHeightDp: Int) {
         tileHeight = dpToPx(tileHeightDp)
     }
 
 
-    /**
+    */
+/**
      * @param tileWidthDp the new width for each tile in dips
      * @see .setTileWidth
-     */
+     *//*
+
     fun setTileWidthDp(tileWidthDp: Int) {
         tileWidth = dpToPx(tileWidthDp)
     }
@@ -477,37 +520,47 @@ class MaterialCalendarView : ViewGroup {
         ).toInt()
     }
 
-    /**
+    */
+/**
      * Whether the pager can page forward, meaning the future month is enabled.
      *
      * @return true if there is a future month that can be shown
-     */
+     *//*
+
     fun canGoForward(): Boolean {
         return (pager?.currentItem ?: 2) < adapter.count - 1
     }
 
-    /**
+    */
+/**
      * Whether the pager can page backward, meaning the previous month is enabled.
      *
      * @return true if there is a previous month that can be shown
-     */
+     *//*
+
     fun canGoBack(): Boolean {
         return pager.currentItem > 0
     }
 
-    /**
+    */
+/**
      * Pass all touch events to the pager so scrolling works on the edges of the calendar view.
-     */
+     *//*
+
     override fun onTouchEvent(event: MotionEvent): Boolean {
         return pager.dispatchTouchEvent(event)
     }
 
-    /**
+    */
+/**
      * @return the color used for the selection
-     */
-    /**
+     *//*
+
+    */
+/**
      * @param color The selection color
-     */
+     *//*
+
     var selectionColor: Int
         get() = accentColor
         set(color) {
@@ -524,46 +577,56 @@ class MaterialCalendarView : ViewGroup {
             invalidate()
         }
 
-    /**
+    */
+/**
      * Set content description for button past
      *
      * @param description String to use as content description
-     */
+     *//*
+
     fun setContentDescriptionArrowPast(description: DayFormatter?) {
         buttonPast?.contentDescription = description.toString()
     }
 
-    /**
+    */
+/**
      * Set content description for button future
      *
      * @param description String to use as content description
-     */
+     *//*
+
     fun setContentDescriptionArrowFuture(description: CharSequence?) {
         buttonFuture?.contentDescription = description
     }
 
-    /**
+    */
+/**
      * Set content description for calendar
      *
      * @param description String to use as content description
-     */
+     *//*
+
     fun setContentDescriptionCalendar(description: CharSequence?) {
         calendarContentDescription = description
     }
 
 
-    /**
+    */
+/**
      * Set a formatter for day content description.
      *
      * @param formatter the new formatter, null for default
-     */
+     *//*
+
     fun setDayFormatterContentDescription(formatter: DayFormatter?) {
         adapter.setDayFormatterContentDescription(formatter!!)
     }
 
-    /**
+    */
+/**
      * @return icon used for the left arrow
-     */
+     *//*
+
     var leftArrow: Drawable?
         get() = buttonPast?.drawable
         set(drawable) {
@@ -577,19 +640,23 @@ class MaterialCalendarView : ViewGroup {
 
         }
 
-    /**
+    */
+/**
      * @param icon the new icon to use for the left paging arrow
      *
      * @Deprecated("Use {@link MaterialCalendarView$leftArrowRes}")
-     */
+     *//*
+
     fun setLeftArrow(@DrawableRes icon: Int) {
         buttonPast?.setImageResource(icon)
     }
 
 
-    /**
+    */
+/**
      * @return icon used for the right arrow
-     */
+     *//*
+
     val rightArrow: Drawable?
         get() = buttonFuture?.drawable
 
@@ -599,28 +666,35 @@ class MaterialCalendarView : ViewGroup {
             buttonFuture?.setImageResource(resId)
         }
 
-    /**
+    */
+/**
      * @param resourceId The text appearance resource id.
-     */
+     *//*
+
     fun setHeaderTextAppearance(resourceId: Int) {
         title?.setTextAppearance(context, resourceId)
     }
 
-    /**
+    */
+/**
      * @param resourceId The text appearance resource id.
-     */
+     *//*
+
     fun setDateTextAppearance(resourceId: Int) {
         adapter.setDateTextAppearance(resourceId)
     }
 
-    /**
+    */
+/**
      * @param resourceId The text appearance resource id.
-     */
+     *//*
+
     fun setWeekDayTextAppearance(resourceId: Int) {
         adapter.setWeekDayTextAppearance(resourceId)
     }
 
-    /**
+    */
+/**
      * Get the currently selected date, or null if no selection. Depending on the selection mode,
      * you might get different results.
      *
@@ -637,7 +711,8 @@ class MaterialCalendarView : ViewGroup {
      * @return The selected day, or null if no selection. If in multiple selection mode, this
      * will return the last date of the list of selected dates.
      * @see MaterialCalendarView.getSelectedDates
-     */
+     *//*
+
     val selectedDate: CalendarDay?
         get() {
             val dates: List<CalendarDay> = adapter.getSelectedDates()
@@ -650,7 +725,8 @@ class MaterialCalendarView : ViewGroup {
         }
 
 
-    /**
+    */
+/**
      * Return the list of currently selected dates. Mostly useful for [.SELECTION_MODE_MULTIPLE]
      * and [.SELECTION_MODE_RANGE]. For the other modes, check [.getSelectedDate].
      *
@@ -661,14 +737,17 @@ class MaterialCalendarView : ViewGroup {
      *
      * @return All of the currently selected dates.
      * @see {@link MaterialCalendarView$selectedDate}
-     */
-    fun getSelectedDates(): List<CalendarDay> {
+     *//*
+
+    fun getSelectedDates(): MutableList<CalendarDay> {
         return adapter.getSelectedDates()
     }
 
-    /**
+    */
+/**
      * Clear the currently selected date(s)
-     */
+     *//*
+
     fun clearSelection() {
         val dates = getSelectedDates()
         adapter.clearSelections()
@@ -677,16 +756,20 @@ class MaterialCalendarView : ViewGroup {
         }
     }
 
-    /**
+    */
+/**
      * @param date a Date set to a day to select. Null to clear selection
-     */
+     *//*
+
     fun setSelectedDate(date: LocalDate?) {
         setSelectedDate(from(date))
     }
 
-    /**
+    */
+/**
      * @param date a Date to set as selected. Null to clear selection
-     */
+     *//*
+
     fun setSelectedDate(date: CalendarDay?) {
         clearSelection()
         if (date != null) {
@@ -694,18 +777,21 @@ class MaterialCalendarView : ViewGroup {
         }
     }
 
-    /**
+    */
+/**
      * @param day      a CalendarDay to change. Passing null does nothing
      * @param selected true if day should be selected, false to deselect
-     */
+     *//*
+
     fun setDateSelected(day: CalendarDay?, selected: Boolean) {
         if (day == null) {
             return
         }
-        adapter.setDateSelected(day, selected)
+        adapter.setSelectedDate(day, selected)
     }
 
-    /**
+    */
+/**
      * Get the current first day of the month in month mode, or the first visible day of the
      * currently visible week.
      *
@@ -716,12 +802,14 @@ class MaterialCalendarView : ViewGroup {
      *
      * @return The current month or week shown, will be set to first day of the month in month mode,
      * or the first visible day for a week.
-     */
+     *//*
+
     fun getCurrentDate(): CalendarDay? {
         return adapter.getItem(pager.currentItem)
     }
 
-    /**
+    */
+/**
      * Set the calendar to a specific month or week based on a date.
      *
      *
@@ -731,12 +819,14 @@ class MaterialCalendarView : ViewGroup {
      * In week mode, the calendar will be set to the corresponding week.
      *
      * @param calendar a Calendar set to a day to focus the calendar on. Null will do nothing
-     */
+     *//*
+
     fun setCurrentDate(calendar: LocalDate?) {
         setCurrentDate(from(calendar))
     }
 
-    /**
+    */
+/**
      * Set the calendar to a specific month or week based on a date.
      *
      *
@@ -746,12 +836,14 @@ class MaterialCalendarView : ViewGroup {
      * In week mode, the calendar will be set to the corresponding week.
      *
      * @param day a CalendarDay to focus the calendar on. Null will do nothing
-     */
+     *//*
+
     fun setCurrentDate(day: CalendarDay?) {
         setCurrentDate(day, true)
     }
 
-    /**
+    */
+/**
      * Set the calendar to a specific month or week based on a date.
      *
      *
@@ -762,7 +854,8 @@ class MaterialCalendarView : ViewGroup {
      *
      * @param day             a CalendarDay to focus the calendar on. Null will do nothing
      * @param useSmoothScroll use smooth scroll when changing months.
-     */
+     *//*
+
     fun setCurrentDate(day: CalendarDay?, useSmoothScroll: Boolean) {
         if (day == null) {
             return
@@ -776,21 +869,26 @@ class MaterialCalendarView : ViewGroup {
         updateUi()
     }
 
-    /**
+    */
+/**
      * @return the minimum selectable date for the calendar, if any
-     */
+     *//*
+
     fun getMinimumDate(): CalendarDay? {
         return minDate
     }
 
-    /**
+    */
+/**
      * @return the maximum selectable date for the calendar, if any
-     */
+     *//*
+
     fun getMaximumDate(): CalendarDay? {
         return maxDate
     }
 
-    /**
+    */
+/**
      * The default value is [.SHOW_DEFAULTS], which currently is just [ ][.SHOW_DECORATED_DISABLED].
      * This means that the default visible days are of the current month, in the min-max range.
      *
@@ -806,44 +904,52 @@ class MaterialCalendarView : ViewGroup {
      * @see .SHOW_OUT_OF_RANGE
      *
      * @see .SHOW_DECORATED_DISABLED
-     */
+     *//*
+
     fun setShowOtherDates(@ShowOtherDates showOtherDates: Int) {
         adapter.setShowOtherDates(showOtherDates)
     }
 
-    /**
+    */
+/**
      * Allow the user to click on dates from other months that are not out of range. Go to next or
      * previous month if a day outside the current month is clicked. The day still need to be
      * enabled to be selected.
      * Default value is true. Should be used with [.SHOW_OTHER_MONTHS].
      *
      * @param enabled True to allow the user to click on a day outside current month displayed
-     */
+     *//*
+
     fun setAllowClickDaysOutsideCurrentMonth(enabled: Boolean) {
         allowClickDaysOutsideCurrentMonth = enabled
     }
 
     fun setTextColor(color: Int) {}
 
-    /**
+    */
+/**
      * Set a formatter for weekday labels.
      *
      * @param formatter the new formatter, null for default
-     */
+     *//*
+
     fun setWeekDayFormatter(formatter: WeekDayFormatter?) {
         adapter.weekDayFormatter = formatter ?: WeekDayFormatter.DEFAULT
     }
 
-    /**
+    */
+/**
      * Set a formatter for day labels.
      *
      * @param formatter the new formatter, null for default
-     */
+     *//*
+
     fun setDayFormatter(formatter: DayFormatter?) {
         adapter.setDayFormatter(formatter ?: DEFAULT)
     }
 
-    /**
+    */
+/**
      * Set a [WeekDayFormatter]
      * with the provided week day labels
      *
@@ -851,12 +957,14 @@ class MaterialCalendarView : ViewGroup {
      * @see ArrayWeekDayFormatter
      *
      * @see .setWeekDayFormatter
-     */
+     *//*
+
     fun setWeekDayLabels(weekDayLabels: Array<CharSequence?>?) {
         setWeekDayFormatter(ArrayWeekDayFormatter(weekDayLabels))
     }
 
-    /**
+    */
+/**
      * Set a [WeekDayFormatter]
      * with the provided week day labels
      *
@@ -864,12 +972,14 @@ class MaterialCalendarView : ViewGroup {
      * @see ArrayWeekDayFormatter
      *
      * @see .setWeekDayFormatter
-     */
+     *//*
+
     fun setWeekDayLabels(@ArrayRes arrayRes: Int) {
         setWeekDayLabels(resources.getTextArray(arrayRes))
     }
 
-    /**
+    */
+/**
      * @return int of flags used for showing non-enabled dates
      * @see .SHOW_ALL
      *
@@ -882,31 +992,37 @@ class MaterialCalendarView : ViewGroup {
      * @see .SHOW_OUT_OF_RANGE
      *
      * @see .SHOW_DECORATED_DISABLED
-     */
+     *//*
+
     @ShowOtherDates
     fun getShowOtherDates(): Int {
         return adapter.getShowOtherDates()
     }
 
-    /**
+    */
+/**
      * @return true if allow click on days outside current month displayed
-     */
+     *//*
+
     fun allowClickDaysOutsideCurrentMonth(): Boolean {
         return allowClickDaysOutsideCurrentMonth
     }
 
-    /**
+    */
+/**
      * Set a custom formatter for the month/year title
      *
      * @param titleFormatter new formatter to use, null to use default formatter
-     */
+     *//*
+
     fun setTitleFormatter(titleFormatter: TitleFormatter?) {
         titleChanger.titleFormatter = titleFormatter
         adapter.titleFormatter = titleFormatter
         updateUi()
     }
 
-    /**
+    */
+/**
      * Set a [TitleFormatter]
      * using the provided month labels
      *
@@ -914,12 +1030,14 @@ class MaterialCalendarView : ViewGroup {
      * @see MonthArrayTitleFormatter
      *
      * @see .setTitleFormatter
-     */
+     *//*
+
     fun setTitleMonths(monthLabels: Array<CharSequence?>?) {
         setTitleFormatter(MonthArrayTitleFormatter(monthLabels))
     }
 
-    /**
+    */
+/**
      * Set a [TitleFormatter]
      * using the provided month labels
      *
@@ -927,42 +1045,51 @@ class MaterialCalendarView : ViewGroup {
      * @see MonthArrayTitleFormatter
      *
      * @see .setTitleFormatter
-     */
+     *//*
+
     fun setTitleMonths(@ArrayRes arrayRes: Int) {
         setTitleMonths(resources.getTextArray(arrayRes))
     }
 
-    /**
+    */
+/**
      * Change the title animation orientation to have a different look and feel.
      *
      * @param orientation [MaterialCalendarView.VERTICAL] or [                    ][MaterialCalendarView.HORIZONTAL]
-     */
+     *//*
+
     fun setTitleAnimationOrientation(orientation: Int) {
         titleChanger.orientation = orientation
     }
 
-    /**
+    */
+/**
      * Get the orientation of the animation of the title.
      *
      * @return Title animation orientation [MaterialCalendarView.VERTICAL] or [ ][MaterialCalendarView.HORIZONTAL]
-     */
+     *//*
+
     fun getTitleAnimationOrientation(): Int {
         return titleChanger.orientation
     }
 
-    /**
+    */
+/**
      * Sets the visibility [.topbar], which contains
      * the previous month button [.buttonPast], next month button [.buttonFuture],
      * and the month title [.title].
      *
      * @param visible Boolean indicating if the topbar is visible
-     */
+     *//*
+
 
 
     var topbarVisible: Boolean
-        /**
+        */
+/**
          * @return true if the topbar is visible
-         */
+         *//*
+
         get(): Boolean {
             return topbar?.visibility == View.VISIBLE
         }
@@ -1032,7 +1159,7 @@ class MaterialCalendarView : ViewGroup {
         var allowClickDaysOutsideCurrentMonth = true
         var minDate: CalendarDay? = null
         var maxDate: CalendarDay? = null
-        var selectedDates: List<CalendarDay> = ArrayList()
+        var selectedDates: MutableList<CalendarDay> = ArrayList()
         var topbarVisible = true
         var selectionMode = SELECTION_MODE_SINGLE
         var dynamicHeightEnabled = false
@@ -1081,7 +1208,8 @@ class MaterialCalendarView : ViewGroup {
         }
     }
 
-    /**
+    */
+/**
      * By default, the calendar will take up all the space needed to show any month (6 rows).
      * By enabling dynamic height, the view will change height dependant on the visible month.
      *
@@ -1090,23 +1218,28 @@ class MaterialCalendarView : ViewGroup {
      * that many rows, and will grow and shrink as necessary.
      *
      * @param useDynamicHeight true to have the view different heights based on the visible month
-     */
+     *//*
+
     fun setDynamicHeightEnabled(useDynamicHeight: Boolean) {
         mDynamicHeightEnabled = useDynamicHeight
     }
 
-    /**
+    */
+/**
      * @return the dynamic height state - true if enabled.
-     */
+     *//*
+
     fun isDynamicHeightEnabled(): Boolean {
         return mDynamicHeightEnabled
     }
 
-    /**
+    */
+/**
      * Add a collection of day decorators
      *
      * @param decorators decorators to add
-     */
+     *//*
+
     fun addDecorators(decorators: MutableList<DayViewDecorator?>?) {
 
         decorators?.let {
@@ -1124,20 +1257,24 @@ class MaterialCalendarView : ViewGroup {
 
     }
 
-    /**
+    */
+/**
      * Add several day decorators
      *
      * @param decorators decorators to add
-     */
+     *//*
+
     fun addDecorators(vararg decorators: DayViewDecorator?) {
         addDecorators(mutableListOf<DayViewDecorator?>(*decorators))
     }
 
-    /**
+    */
+/**
      * Add a day decorator
      *
      * @param decorator decorator to add
-     */
+     *//*
+
     fun addDecorator(decorator: DayViewDecorator?) {
         if (decorator == null) {
             return
@@ -1146,124 +1283,150 @@ class MaterialCalendarView : ViewGroup {
         adapter.decorators = dayViewDecorators
     }
 
-    /**
+    */
+/**
      * Remove all decorators
-     */
+     *//*
+
     fun removeDecorators() {
         dayViewDecorators.clear()
         adapter.decorators = dayViewDecorators
     }
 
-    /**
+    */
+/**
      * Remove a specific decorator instance. Same rules as [List.remove]
      *
      * @param decorator decorator to remove
-     */
+     *//*
+
     fun removeDecorator(decorator: DayViewDecorator) {
         dayViewDecorators.remove(decorator)
         adapter.decorators = dayViewDecorators
     }
 
-    /**
+    */
+/**
      * Invalidate decorators after one has changed internally. That is, if a decorator mutates, you
      * should call this method to update the widget.
-     */
+     *//*
+
     fun invalidateDecorators() {
         adapter.invalidateDecorators()
     }
-    /*
+    */
+/*
      * Listener/Callback Code
-     */
-    /**
+     *//*
+
+    */
+/**
      * Sets the listener to be notified upon selected date changes.
      *
      * @param listener thing to be notified
-     */
+     *//*
+
     fun setOnDateChangedListener(listener: OnDateSelectedListener?) {
         this.listener = listener
     }
 
-    /**
+    */
+/**
      * Sets the listener to be notified upon long clicks on dates.
      *
      * @param longClickListener thing to be notified
-     */
+     *//*
+
     fun setOnDateLongClickListener(longClickListener: OnDateLongClickListener?) {
         this.longClickListener = longClickListener
     }
 
-    /**
+    */
+/**
      * Sets the listener to be notified upon month changes.
      *
      * @param listener thing to be notified
-     */
+     *//*
+
     fun setOnMonthChangedListener(listener: OnMonthChangedListener?) {
         monthListener = listener
     }
 
-    /**
+    */
+/**
      * Sets the listener to be notified upon a range has been selected.
      *
      * @param listener thing to be notified
-     */
+     *//*
+
     fun setOnRangeSelectedListener(listener: OnRangeSelectedListener?) {
         rangeListener = listener
     }
 
-    /**
+    */
+/**
      * Add listener to the title or null to remove it.
      *
      * @param listener Listener to be notified.
-     */
+     *//*
+
     fun setOnTitleClickListener(listener: OnClickListener?) {
         title?.setOnClickListener(listener)
     }
 
-    /**
+    */
+/**
      * Dispatch date change events to a listener, if set
      *
      * @param day      the day that was selected
      * @param selected true if the day is now currently selected, false otherwise
-     */
+     *//*
+
     protected fun dispatchOnDateSelected(day: CalendarDay?, selected: Boolean) {
         if (listener != null) {
             listener!!.onDateSelected(this@MaterialCalendarView, day!!, selected)
         }
     }
 
-    /**
+    */
+/**
      * Dispatch a range of days to a range listener, if set, ordered chronologically.
      *
      * @param days Enclosing days ordered from first to last day.
-     */
+     *//*
+
     protected fun dispatchOnRangeSelected(days: List<CalendarDay?>) {
         if (rangeListener != null) {
             rangeListener!!.onRangeSelected(this@MaterialCalendarView, days)
         }
     }
 
-    /**
+    */
+/**
      * Dispatch date change events to a listener, if set
      *
      * @param day first day of the new month
-     */
+     *//*
+
     protected fun dispatchOnMonthChanged(day: CalendarDay?) {
         if (monthListener != null) {
             monthListener!!.onMonthChanged(this@MaterialCalendarView, day)
         }
     }
 
-    /**
+    */
+/**
      * Call by [CalendarPagerView] to indicate that a day was clicked and we should handle it.
      * This method will always process the click to the selected date.
      *
      * @param date        date of the day that was clicked
      * @param nowSelected true if the date is now selected, false otherwise
-     */
+     *//*
+
     protected fun onDateClicked(date: CalendarDay, nowSelected: Boolean) {
         when (selectionMode) {
             SELECTION_MODE_MULTIPLE -> {
-                adapter.setDateSelected(date, nowSelected)
+                adapter.setSelectedDate(date, nowSelected)
                 dispatchOnDateSelected(date, nowSelected)
             }
             SELECTION_MODE_RANGE -> {
@@ -1271,14 +1434,14 @@ class MaterialCalendarView : ViewGroup {
                     adapter.getSelectedDates()
                 if (currentSelection.isEmpty()) {
                     // Selecting the first date of a range
-                    adapter.setDateSelected(date, nowSelected)
+                    adapter.setSelectedDate(date, nowSelected)
                     dispatchOnDateSelected(date, nowSelected)
                 } else if (currentSelection.size == 1) {
                     // Selecting the second date of a range
                     val firstDaySelected = currentSelection[0]
                     if (firstDaySelected.equals(date)) {
                         // Right now, we are not supporting a range of one day, so we are removing the day instead.
-                        adapter.setDateSelected(date, nowSelected)
+                        adapter.setSelectedDate(date, nowSelected)
                         dispatchOnDateSelected(date, nowSelected)
                     } else if (firstDaySelected.isAfter(date)) {
                         // Selecting a range, dispatching in reverse order...
@@ -1292,29 +1455,31 @@ class MaterialCalendarView : ViewGroup {
                 } else {
                     // Clearing selection and making a selection of the new date.
                     adapter.clearSelections()
-                    adapter.setDateSelected(date, nowSelected)
+                    adapter.setSelectedDate(date, nowSelected)
                     dispatchOnDateSelected(date, nowSelected)
                 }
             }
             SELECTION_MODE_SINGLE -> {
                 adapter.clearSelections()
-                adapter.setDateSelected(date, true)
+                adapter.setSelectedDate(date, true)
                 dispatchOnDateSelected(date, true)
             }
             else -> {
                 adapter.clearSelections()
-                adapter.setDateSelected(date, true)
+                adapter.setSelectedDate(date, true)
                 dispatchOnDateSelected(date, true)
             }
         }
     }
 
-    /**
+    */
+/**
      * Select a fresh range of date including first day and last day.
      *
      * @param firstDay first day of the range to select
      * @param lastDay  last day of the range to select
-     */
+     *//*
+
     fun selectRange(firstDay: CalendarDay?, lastDay: CalendarDay?) {
         if (firstDay == null || lastDay == null) {
             return
@@ -1327,9 +1492,11 @@ class MaterialCalendarView : ViewGroup {
         }
     }
 
-    /**
+    */
+/**
      * Call by [CalendarPagerView] to indicate that a day was clicked and we should handle it
-     */
+     *//*
+
     fun onDateClicked(dayView: DayView) {
         val currentDate = getCurrentDate()
         val selectedDate = dayView.date
@@ -1347,37 +1514,47 @@ class MaterialCalendarView : ViewGroup {
         onDateClicked(dayView.date!!, !dayView.isChecked)
     }
 
-    /**
+    */
+/**
      * Call by [CalendarPagerView] to indicate that a day was long clicked and we should handle
      * it
-     */
+     *//*
+
     fun onDateLongClicked(dayView: DayView) {
         if (longClickListener != null) {
             longClickListener!!.onDateLongClick(this@MaterialCalendarView, dayView.date!!)
         }
     }
 
-    /**
+    */
+/**
      * Called by the adapter for cases when changes in state result in dates being unselected
      *
      * @param date date that should be de-selected
-     */
+     *//*
+
     fun onDateUnselected(date: CalendarDay?) {
         dispatchOnDateSelected(date, false)
     }
-    /*
+    */
+/*
      * Custom ViewGroup Code
-     */
-    /**
+     *//*
+
+    */
+/**
      * {@inheritDoc}
-     */
+     *//*
+
     override fun generateDefaultLayoutParams(): LayoutParams {
         return LayoutParams(1)
     }
 
-    /**
+    */
+/**
      * {@inheritDoc}
-     */
+     *//*
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val specWidthSize = MeasureSpec.getSize(widthMeasureSpec)
         val specWidthMode = MeasureSpec.getMode(widthMeasureSpec)
@@ -1492,9 +1669,11 @@ class MaterialCalendarView : ViewGroup {
         return if (isShowWeekDays) res + DAY_NAMES_ROW else res
     }
 
-    /**
+    */
+/**
      * {@inheritDoc}
-     */
+     *//*
+
     override fun onLayout(
         changed: Boolean,
         left: Int,
@@ -1520,9 +1699,11 @@ class MaterialCalendarView : ViewGroup {
         }
     }
 
-    /**
+    */
+/**
      * {@inheritDoc}
-     */
+     *//*
+
     override fun generateLayoutParams(attrs: AttributeSet): LayoutParams {
         return LayoutParams(1)
     }
@@ -1531,9 +1712,11 @@ class MaterialCalendarView : ViewGroup {
         return false
     }
 
-    /**
+    */
+/**
      * {@inheritDoc}
-     */
+     *//*
+
     override fun checkLayoutParams(p: ViewGroup.LayoutParams): Boolean {
         return p is LayoutParams
     }
@@ -1552,45 +1735,57 @@ class MaterialCalendarView : ViewGroup {
         info.className = MaterialCalendarView::class.java.name
     }
 
-    /**
+    */
+/**
      * Simple layout params for MaterialCalendarView. The only variation for layout is height.
-     */
+     *//*
+
     class LayoutParams
-    /**
+    */
+/**
      * Create a layout that matches parent width, and is X number of tiles high
      *
      * @param tileHeight view height in number of tiles
-     */
+     *//*
+
         (tileHeight: Int) :
         MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, tileHeight)
 
-    /**
+    */
+/**
      * Enable or disable the ability to swipe between months.
      *
      * @param pagingEnabled pass false to disable paging, true to enable (default)
-     */
+     *//*
+
     fun setPagingEnabled(pagingEnabled: Boolean) {
         pager!!.isPagingEnabled = pagingEnabled
         updateUi()
     }
 
-    /**
+    */
+/**
      * @return true if swiping months is enabled, false if disabled. Default is true.
-     */
+     *//*
+
     fun isPagingEnabled(): Boolean {
         return pager!!.isPagingEnabled
     }
 
-    /**
+    */
+/**
      * Preserve the current parameters of the Material Calendar View.
-     */
+     *//*
+
     fun state(): State? {
         return state
     }
 
-    /**
+    */
+/**
      * Initialize the parameters from scratch.
-     */
+     *//*
+
     fun newState(): StateBuilder {
         return StateBuilder()
     }
@@ -1638,7 +1833,7 @@ class MaterialCalendarView : ViewGroup {
 
         recreateAdapter()
 
-        adapter.isShowWeekDays = isShowWeekDays
+        adapter.showWeekDays = isShowWeekDays
         pager?.adapter = adapter
 
         setRangeDates(minDate, maxDate)
@@ -1692,79 +1887,105 @@ class MaterialCalendarView : ViewGroup {
     companion object {
         const val INVALID_TILE_DIMENSION = -10
 
-        /**
+        */
+/**
          * Selection mode that disallows all selection.
          * When changing to this mode, current selection will be cleared.
-         */
+         *//*
+
         const val SELECTION_MODE_NONE = 0
 
-        /**
+        */
+/**
          * Selection mode that allows one selected date at one time. This is the default mode.
          * When switching from [.SELECTION_MODE_MULTIPLE], this will select the same date
          * as from [.getSelectedDate], which should be the last selected date
-         */
+         *//*
+
         const val SELECTION_MODE_SINGLE = 1
 
-        /**
+        */
+/**
          * Selection mode which allows more than one selected date at one time.
-         */
+         *//*
+
         const val SELECTION_MODE_MULTIPLE = 2
 
-        /**
+        */
+/**
          * Selection mode which allows selection of a range between two dates
-         */
+         *//*
+
         const val SELECTION_MODE_RANGE = 3
 
-        /**
+        */
+/**
          * Do not show any non-enabled dates
-         */
+         *//*
+
         const val SHOW_NONE = 0
 
-        /**
+        */
+/**
          * Show dates from the proceeding and successive months, in a disabled state.
          * This flag also enables the [.SHOW_OUT_OF_RANGE] flag to prevent odd blank areas.
-         */
+         *//*
+
         const val SHOW_OTHER_MONTHS = 1
 
-        /**
+        */
+/**
          * Show dates that are outside of the min-max range.
          * This will only show days from the current month unless [.SHOW_OTHER_MONTHS] is enabled.
-         */
+         *//*
+
         const val SHOW_OUT_OF_RANGE = 1 shl 1
 
-        /**
+        */
+/**
          * Show days that are individually disabled with decorators.
          * This will only show dates in the current month and inside the minimum and maximum date range.
-         */
+         *//*
+
         const val SHOW_DECORATED_DISABLED = 1 shl 2
 
-        /**
+        */
+/**
          * The default flags for showing non-enabled dates. Currently only shows [ ][.SHOW_DECORATED_DISABLED]
-         */
+         *//*
+
         const val SHOW_DEFAULTS = SHOW_DECORATED_DISABLED
 
-        /**
+        */
+/**
          * Show all the days
-         */
+         *//*
+
         const val SHOW_ALL =
             SHOW_OTHER_MONTHS or SHOW_OUT_OF_RANGE or SHOW_DECORATED_DISABLED
 
-        /**
+        */
+/**
          * Use this orientation to animate the title vertically
-         */
+         *//*
+
         const val VERTICAL = 0
 
-        /**
+        */
+/**
          * Use this orientation to animate the title horizontally
-         */
+         *//*
+
         const val HORIZONTAL = 1
 
-        /**
+        */
+/**
          * Default tile size in DIPs. This is used in cases where there is no tile size specificed and the
          * view is set to [WRAP_CONTENT][ViewGroup.LayoutParams.WRAP_CONTENT]
-         */
+         *//*
+
         const val DEFAULT_TILE_SIZE_DP = 44
-        private const val DEFAULT_DAYS_IN_WEEK = 7
+        const val DEFAULT_DAYS_IN_WEEK = 7
         private const val DEFAULT_MAX_WEEKS = 6
         private const val DAY_NAMES_ROW = 1
         private fun getThemeAccentColor(context: Context): Int {
@@ -1780,41 +2001,51 @@ class MaterialCalendarView : ViewGroup {
             context.theme.resolveAttribute(colorAttr, outValue, true)
             return outValue.data
         }
-        /*
+        */
+/*
      * Show Other Dates Utils
-     */
-        /**
+     *//*
+
+        */
+/**
          * @param showOtherDates int flag for show other dates
          * @return true if the other months flag is set
-         */
+         *//*
+
         fun showOtherMonths(@ShowOtherDates showOtherDates: Int): Boolean {
             return showOtherDates and SHOW_OTHER_MONTHS != 0
         }
 
-        /**
+        */
+/**
          * @param showOtherDates int flag for show other dates
          * @return true if the out of range flag is set
-         */
+         *//*
+
         fun showOutOfRange(@ShowOtherDates showOtherDates: Int): Boolean {
             return showOtherDates and SHOW_OUT_OF_RANGE != 0
         }
 
-        /**
+        */
+/**
          * @param showOtherDates int flag for show other dates
          * @return true if the decorated disabled flag is set
-         */
+         *//*
+
         fun showDecoratedDisabled(@ShowOtherDates showOtherDates: Int): Boolean {
             return showOtherDates and SHOW_DECORATED_DISABLED != 0
         }
 
-        /**
+        */
+/**
          * Clamp the size to the measure spec.
          *
          * @param size Size we want to be
          * @param spec Measure spec to clamp against
          * @return the appropriate size to pass to [View.setMeasuredDimension]
-         */
-        private fun clampSize(size: Int, spec: Int): Int {
+         *//*
+
+        fun clampSize(size: Int, spec: Int): Int {
             val specMode = MeasureSpec.getMode(spec)
             val specSize = MeasureSpec.getSize(spec)
             return when (specMode) {
@@ -1833,12 +2064,14 @@ class MaterialCalendarView : ViewGroup {
             }
         }
 
-        /**
+        */
+/**
          * Used for enabling or disabling views, while also changing the alpha.
          *
          * @param view   The view to enable or disable.
          * @param enable Whether to enable or disable the view.
-         */
+         *//*
+
         private fun enableView(view: View?, enable: Boolean) {
             view?.isEnabled = enable
             view?.alpha = if (enable) 1f else 0.1f
@@ -2024,4 +2257,4 @@ class MaterialCalendarView : ViewGroup {
             clipToPadding = true
         }
     }
-}
+}*/

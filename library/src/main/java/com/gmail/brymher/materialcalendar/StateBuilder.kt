@@ -6,10 +6,10 @@ import org.threeten.bp.temporal.WeekFields
 import java.util.*
 
 
-class StateBuilder {
+class StateBuilder() {
 
-    var calendarMode: CalendarMode
-    var firstDayOfWeek: DayOfWeek = DayOfWeek.SUNDAY
+    var calendarMode: CalendarMode = State.CALENDAR_MODE
+    var firstDayOfWeek: DayOfWeek = State.FIRST_DAY_WEEK
         private set
     var cacheCurrentPosition = false
     var minDate: CalendarDay? = null
@@ -17,15 +17,7 @@ class StateBuilder {
     var showWeekDays = false
         private set
 
-    constructor() {
-        calendarMode = CalendarMode.MONTHS
-        firstDayOfWeek = LocalDate.now().with(
-            WeekFields.of(Locale.getDefault()).dayOfWeek(),
-            1
-        ).dayOfWeek
-    }
-
-    constructor(state: State) {
+    constructor(state: State) : this() {
         calendarMode = state.calendarMode
         firstDayOfWeek = state.firstDayOfWeek
         minDate = state.minDate
@@ -63,7 +55,7 @@ class StateBuilder {
     /**
      * @param date set the minimum selectable date, null for no minimum
      */
-    fun setMinimumDate(date: LocalDate?): StateBuilder {
+    fun setMinimumDate(date: LocalDate): StateBuilder {
         setMinimumDate(CalendarDay.from(date))
         return this
     }
@@ -79,7 +71,7 @@ class StateBuilder {
     /**
      * @param date set the maximum selectable date, null for no maximum
      */
-    fun setMaximumDate(date: LocalDate?): StateBuilder {
+    fun setMaximumDate(date: LocalDate): StateBuilder {
         setMaximumDate(CalendarDay.from(date))
         return this
     }

@@ -185,7 +185,7 @@ open class CalendarBehavior(context: Context?, attrs: AttributeSet?) :
             return
         }
         calendarMode = null
-        calendarView.state()?.apply {
+        calendarView.state?.apply {
             edit()
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit(calendarView)
@@ -199,7 +199,7 @@ open class CalendarBehavior(context: Context?, attrs: AttributeSet?) :
             return
         }
         calendarMode = null
-        calendarView.state()?.apply {
+        calendarView.state?.apply {
             edit()
                 .setCalendarDisplayMode(CalendarMode.WEEKS)
                 .commit(calendarView)

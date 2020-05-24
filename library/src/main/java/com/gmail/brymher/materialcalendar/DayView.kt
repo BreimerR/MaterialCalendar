@@ -19,6 +19,8 @@ import android.text.Spanned
 import android.view.Gravity
 import android.view.View
 import androidx.appcompat.widget.AppCompatCheckedTextView
+import com.gmail.brymher.materialcalendar.MaterialCalendarView.showDecoratedDisabled
+import com.gmail.brymher.materialcalendar.MaterialCalendarView.showOutOfRange
 import com.gmail.brymher.materialcalendar.format.DayFormatter
 
 
@@ -155,12 +157,8 @@ class DayView(context: Context?, day: CalendarDay?) : AppCompatCheckedTextView(c
         super.setEnabled(isInRange && !isDecoratedDisabled)
         val showOtherMonths =
             MaterialCalendarView.showOtherMonths(showOtherDates)
-        val showOutOfRange =
-            MaterialCalendarView.showOutOfRange(showOtherDates) || showOtherMonths
-        val showDecoratedDisabled =
-            MaterialCalendarView.showDecoratedDisabled(
-                showOtherDates
-            )
+        val showOutOfRange = showOutOfRange(showOtherDates) || showOtherMonths
+        val showDecoratedDisabled = showDecoratedDisabled(showOtherDates)
         var shouldBeVisible = enabled
         if (!isInMonth && showOtherMonths) {
             shouldBeVisible = true

@@ -90,6 +90,7 @@ abstract class CalendarPagerView : ViewGroup, View.OnClickListener, OnLongClickL
         temp: LocalDate?
     ) {
         val day = CalendarDay.from(temp)
+
         val dayView = DayView(context, day)
 
         dayView.setOnClickListener(this)
@@ -138,15 +139,19 @@ abstract class CalendarPagerView : ViewGroup, View.OnClickListener, OnLongClickL
         invalidateDecorators()
     }
 
-    fun setWeekDayTextAppearance(taId: Int) {
-        for (weekDayView in weekDayViews) {
-            weekDayView.setTextAppearance(context, taId)
+    fun setWeekDayTextAppearance(resId: Int?) {
+        resId?.let {
+            for (weekDayView in weekDayViews) {
+                weekDayView.setTextAppearanceCompat(resId)
+            }
         }
     }
 
-    fun setDateTextAppearance(taId: Int) {
-        for (dayView in dayViews) {
-            dayView.setTextAppearance(context, taId)
+    fun setDateTextAppearance(resId: Int?) {
+        resId?.let {
+            for (dayView in dayViews) {
+                dayView.setTextAppearanceCompat(it)
+            }
         }
     }
 

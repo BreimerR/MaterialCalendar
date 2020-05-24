@@ -31,7 +31,7 @@ class AppBarMaterialCalendarBehavior(context: Context, attributeSet: AttributeSe
             return
         }
 
-        calendarView.state()?.apply {
+        calendarView.state?.apply {
             edit()
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit(calendarView)
@@ -46,7 +46,7 @@ class AppBarMaterialCalendarBehavior(context: Context, attributeSet: AttributeSe
             return
         }
 
-        calendarView.state()?.apply {
+        calendarView.state?.apply {
             edit()
                 .setCalendarDisplayMode(CalendarMode.WEEKS)
                 .commit(calendarView)

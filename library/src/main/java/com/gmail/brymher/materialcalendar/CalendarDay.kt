@@ -24,7 +24,7 @@ class CalendarDay : Parcelable {
      * @param month new instance's month as defined by [java.util.Calendar]
      * @param day   new instance's day of month
      */
-    private constructor(year: Int, month: Int, day: Int) {
+    constructor(year: Int, month: Int, day: Int) {
         date = LocalDate.of(year, month, day)
     }
 
@@ -163,8 +163,8 @@ class CalendarDay : Parcelable {
          * @return CalendarDay set to the specified date
          */
         @JvmStatic
-        fun from(date: LocalDate?): CalendarDay? {
-            return date?.let { CalendarDay(it) }
+        fun from(date: LocalDate?): CalendarDay? = date?.let {
+            CalendarDay(it)
         }
 
         @JvmStatic

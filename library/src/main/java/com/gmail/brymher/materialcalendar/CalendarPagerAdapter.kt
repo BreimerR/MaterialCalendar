@@ -39,6 +39,7 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
         private set
 
     private var selectedDates: MutableList<CalendarDay?> = ArrayList()
+
     var weekDayFormatter: WeekDayFormatter = WeekDayFormatter.DEFAULT
         set(value) {
             field = value
@@ -55,7 +56,7 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
         }
     private var decoratorResults: MutableList<DecoratorResult>? = null
     private var selectionEnabled = true
-    var isShowWeekDays = false
+    var showWeekDays = false
 
     fun invalidateDecorators() {
         decoratorResults = ArrayList()
@@ -289,7 +290,7 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
      * @param selected Whether to select or un-select the day from the list.
      * @see CalendarPagerAdapter.selectRange
      */
-    fun setDateSelected(
+    fun setSelectedDate(
         day: CalendarDay?,
         selected: Boolean
     ) {
@@ -312,7 +313,7 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
      *
      * @param first The first day of the range.
      * @param last  The last day in the range.
-     * @see CalendarPagerAdapter.setDateSelected
+     * @see CalendarPagerAdapter.setSelectedDate
      */
     fun selectRange(
         first: CalendarDay,
@@ -336,7 +337,7 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
     private fun invalidateSelectedDates() {
         validateSelectedDates()
         for (pagerView in currentViews) {
-            pagerView!!.setSelectedDates(selectedDates)
+            pagerView?.setSelectedDates(selectedDates)
         }
     }
 
@@ -361,6 +362,11 @@ abstract class CalendarPagerAdapter<V : CalendarPagerView?> constructor(
 
     fun getSelectedDates(): MutableList<CalendarDay> {
         return Collections.unmodifiableList(selectedDates)
+    }
+
+    fun setSelectedDates(vararg days: CalendarDay) {
+        selectedDates.clear()
+        for (day in days) selectedDates.add(day)
     }
 
     fun getDateTextAppearance(): Int {

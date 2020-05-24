@@ -7,9 +7,10 @@
 
     <com.gmail.brymher.materialcalendar.MaterialCalendarView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:mcv_calendarMode="month"
-        app:mcv_showTopBar="true" />
+
+        app:mcv_showOtherDates="all" />
 
 
 </LinearLayout>
