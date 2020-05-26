@@ -1486,6 +1486,7 @@ class MaterialCalendarView : ViewGroup {
      * {@inheritDoc}
      */
     override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+
         val count = childCount
         val parentLeft = paddingLeft
         val parentWidth = right - left - parentLeft - paddingRight
