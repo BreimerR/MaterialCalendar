@@ -5,11 +5,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <!--need to add a multi select action-->
     <com.gmail.brymher.materialcalendar.MaterialCalendarView
         android:id="@+id/calendar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:mcv_calendarMode="month"
-        app:mcv_showWeekDays="true" />
+        android:background="#000FFF"
+        app:mcv_calendarMode="week"
+        app:mcv_selectionMode="single"
+        app:mcv_showOtherDates="all"
+        app:mcv_showWeekDays="false" />
 
 </LinearLayout>
