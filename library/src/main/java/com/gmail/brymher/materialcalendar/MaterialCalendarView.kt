@@ -54,7 +54,7 @@ open class MaterialCalendarView : ViewGroup {
     /**
      * Used for the dynamic calendar height.
      */
-    var dynamicHeightEnabled = false
+    var dynamicHeightEnabled = true
 
     @Suppress("MemberVisibilityCanBePrivate")
     protected val inflater: LayoutInflater? by lateInit {
@@ -63,7 +63,7 @@ open class MaterialCalendarView : ViewGroup {
 
     @Suppress("MemberVisibilityCanBePrivate")
     protected open val content by lateInit {
-        inflater?.inflate(R.layout.calendar_view, null, false)
+        inflater?.inflate(R.layout.calendar_view, this, false)
     }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -730,7 +730,9 @@ open class MaterialCalendarView : ViewGroup {
                 btnNextYear -> nextYear(true)
 
                 btnPrevYear -> previousYear(true)
+
                 btnClearSelection -> clearSelection()
+
                 btnToggleMode -> toggleCalendarMode()
             }
         }
@@ -769,7 +771,6 @@ open class MaterialCalendarView : ViewGroup {
     )
     annotation class SelectionMode {}
 
-
     constructor(context: Context) : super(context) {
         init(context)
     }
@@ -789,13 +790,13 @@ open class MaterialCalendarView : ViewGroup {
 
         initPager()
 
-        // Adapter is created while parsing the TypedArray attrs, so setup has to happen after
-        setupChildren()
-
         currentDate = currentMonth
 
         adapter?.showWeekDays = showWeekDays
 
+
+        // Adapter is created while parsing the TypedArray attrs, so setup has to happen after
+        setupChildren()
 
         if (isInEditMode) {
             if (currentMonth != null && firstDayOfWeek != null) {
@@ -814,13 +815,11 @@ open class MaterialCalendarView : ViewGroup {
                 }
 
                 monthView.setShowOtherDates(showOtherDates)
-                addView(
-                    monthView,
-                    LayoutParams(visibleWeeksCount + CalendarPagerView.DAY_NAMES_ROW)
-                )
+                addView(monthView, LayoutParams(visibleWeeksCount + CalendarPagerView.DAY_NAMES_ROW))
             }
 
         }
+
 
     }
 
@@ -896,12 +895,13 @@ open class MaterialCalendarView : ViewGroup {
     @Suppress("MemberVisibilityCanBePrivate")
     fun setupChildren() {
         addView(topbar)
-        // restore this if the view display is all wrong
-        var tileHeight = 40
 
-        calendarMode?.let {
-            tileHeight =
-                if (showWeekDays) it.visibleWeeksCount + DAY_NAMES_ROW else it.visibleWeeksCount
+        val tileHeight = if (calendarMode == null) {
+            Log.d(TAG, "calendarMode is null defaulting to tileHeight = $tileHeight")
+            40
+        } else {
+            if (showWeekDays) calendarMode!!.visibleWeeksCount + DAY_NAMES_ROW
+            else calendarMode!!.visibleWeeksCount
         }
 
         addView(pager, LayoutParams(tileHeight))
@@ -911,7 +911,6 @@ open class MaterialCalendarView : ViewGroup {
     open fun updateViewPager(position: Int, smoothScroll: Boolean) {
         pager.setCurrentItem(pager.currentItem + position, smoothScroll)
     }
-
 
     @Suppress("MemberVisibilityCanBePrivate")
     open fun nextDay(smoothScroll: Boolean) {
@@ -1655,7 +1654,6 @@ open class MaterialCalendarView : ViewGroup {
         return state
     }
 
-
     /**
      * Initialize the parameters from scratch.
      */
@@ -1726,7 +1724,7 @@ open class MaterialCalendarView : ViewGroup {
         firstDayOfWeek = state.firstDayOfWeek
         minDate = state.minDate
         maxDate = state.maxDate
-        showWeekDays = state.showWeekDays
+        // showWeekDays = state.showWeekDays
 
         // Recreate adapter
         val newAdapter: CalendarPagerAdapter<*> = when (calendarMode) {
@@ -1956,7 +1954,7 @@ open class MaterialCalendarView : ViewGroup {
 
             selectionMode = a.getInteger(
                 R.styleable.MaterialCalendarView_mcv_selectionMode,
-                SELECTION_MODE_SINGLE
+                selectionMode
             )
 
             calendarContentDescription
@@ -2008,12 +2006,12 @@ open class MaterialCalendarView : ViewGroup {
             )
 
 
-            a.getTextArray(com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_weekDayLabels)
+            a.getTextArray(R.styleable.MaterialCalendarView_mcv_weekDayLabels)
                 ?.let {
                     weekDayFormatter = ArrayWeekDayFormatter(it)
                 }
 
-            a.getTextArray(com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_monthLabels)
+            a.getTextArray(R.styleable.MaterialCalendarView_mcv_monthLabels)
                 ?.let {
                     setTitleFormatter(MonthArrayTitleFormatter(it))
                 }
