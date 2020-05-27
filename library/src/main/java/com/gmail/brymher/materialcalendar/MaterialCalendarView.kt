@@ -38,11 +38,13 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 import android.util.Log
+import androidx.core.graphics.drawable.DrawableCompat
 import com.gmail.brymher.materialcalendar.DayView.DEFAULT_TEXT_COLOR
 
+@Suppress("MemberVisibilityCanBePrivate")
 open class MaterialCalendarView : ViewGroup {
 
-    val TAG = this::class.simpleName ?: "MaterialCalendar"
+    private val TAG = this::class.simpleName ?: "MaterialCalendar"
 
     // variables
     var showTopBar = true
@@ -52,7 +54,7 @@ open class MaterialCalendarView : ViewGroup {
     /**
      * Used for the dynamic calendar height.
      */
-    var mDynamicHeightEnabled = false
+    var dynamicHeightEnabled = false
 
     @Suppress("MemberVisibilityCanBePrivate")
     protected val inflater: LayoutInflater? by lateInit {
@@ -128,8 +130,12 @@ open class MaterialCalendarView : ViewGroup {
         }
 
 
-    val isMonthMode: Boolean get() = calendarMode == CalendarMode.MONTHS
-    val isWeekMode: Boolean get() = calendarMode == CalendarMode.WEEKS
+    val isMonthMode: Boolean
+        get() = calendarMode == CalendarMode.MONTHS
+
+    @Suppress("unused")
+    val isWeekMode: Boolean
+        get() = calendarMode == CalendarMode.WEEKS
 
     /**
      * @param tileSizeDp the new size for each tile in dips
@@ -254,7 +260,6 @@ open class MaterialCalendarView : ViewGroup {
             value?.setTintCompat(yearIconsColor)
             btnPrevYear?.setImageDrawable(value)
         }
-
 
     @DrawableRes
     var yearIconsColor: Int = R.color.mcv_text_date_light
@@ -424,15 +429,6 @@ open class MaterialCalendarView : ViewGroup {
     var minDate: CalendarDay? = null
     var maxDate: CalendarDay? = null
 
-    /**
-     * @return the dynamic height state - true if enabled.
-     */
-    var isDynamicHeightEnabled: Boolean
-        get() = mDynamicHeightEnabled
-        set(value) {
-            mDynamicHeightEnabled = value
-        }
-
     var listener: OnDateSelectedListener? = null
     var longClickListener: OnDateLongClickListener? = null
     var monthListener: OnMonthChangedListener? = null
@@ -516,18 +512,6 @@ open class MaterialCalendarView : ViewGroup {
         }
 
     var currentDate: CalendarDay? = if (isInEditMode) null else CalendarDay.today
-        /**
-         * Get the current first day of the month in month mode, or the first visible day of the
-         * currently visible week.
-         * <p>
-         * For example, in week mode, if the week is July 29th, 2018 to August 4th, 2018,
-         * this will return July 29th, 2018. If in month mode and the month is august, then this method
-         * will return August 1st, 2018.
-         *
-         * @return The current month or week shown, will be set to first day of the month in month mode,
-         * or the first visible day for a week.
-         */
-        get() = field
         /**
          * Set the calendar to a specific month or week based on a date.
          * <p>
@@ -702,7 +686,7 @@ open class MaterialCalendarView : ViewGroup {
 
     // views
     val topbar by lateInit {
-        content?.findViewById<LinearLayout>(R.id.header);
+        content?.findViewById<LinearLayout>(R.id.header)
     }
 
     var title by lateInit {
@@ -1109,10 +1093,10 @@ open class MaterialCalendarView : ViewGroup {
         ss.allowClickDaysOutsideCurrentMonth = allowClickDaysOutsideCurrentMonth()
         ss.minDate = getMinimumDate()
         ss.maxDate = getMaximumDate()
-        ss.selectedDates = selectedDates ?: listOf()
+        ss.selectedDates = selectedDates
         ss.selectionMode = selectionMode
         ss.topbarVisible = getTopbarVisible()
-        ss.dynamicHeightEnabled = mDynamicHeightEnabled
+        ss.dynamicHeightEnabled = dynamicHeightEnabled
         ss.currentMonth = currentMonth
         ss.cacheCurrentPosition = state?.cacheCurrentPosition ?: false
         return ss
@@ -1547,7 +1531,7 @@ open class MaterialCalendarView : ViewGroup {
         calendarMode?.let {
             weekCount = it.visibleWeeksCount
             val isInMonthsMode = it == CalendarMode.MONTHS
-            if (isInMonthsMode && mDynamicHeightEnabled && adapter != null) {
+            if (isInMonthsMode && dynamicHeightEnabled && adapter != null) {
                 var a = adapter!!
                 val cal = adapter!!.getItem(pager.currentItem).date
                 val tempLastDay = cal.withDayOfMonth(cal.lengthOfMonth())
@@ -1915,7 +1899,7 @@ open class MaterialCalendarView : ViewGroup {
         }
         setTopbarVisible(ss.topbarVisible)
         selectionMode = ss.selectionMode
-        isDynamicHeightEnabled = ss.dynamicHeightEnabled
+        dynamicHeightEnabled = ss.dynamicHeightEnabled
         currentDate = ss.currentMonth
     }
 
@@ -2221,8 +2205,5 @@ private fun Context.getDrawableCompat(value: Int): Drawable? {
 
 
 fun Drawable.setTintCompat(@DrawableRes value: Int) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        setTint(value)
-    }
-
+    DrawableCompat.setTint(this, value)
 }
