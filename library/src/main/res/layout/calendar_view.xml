@@ -28,6 +28,16 @@
         android:padding="@dimen/mcv_arrow_padding"
         app:srcCompat="@drawable/ic_fast_reverse_inset" />
 
+    <ImageButton
+        android:id="@+id/action_toggle_mode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/mcv_arrow_margin"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/previous_year"
+        android:padding="@dimen/mcv_arrow_padding"
+        app:srcCompat="@drawable/ic_action_up" />
+
     <!--This should be a spinner-->
     <TextView
         android:id="@+id/month_name"
@@ -38,6 +48,16 @@
         android:layout_weight="1"
         android:gravity="center"
         tools:text="August 2018" />
+
+    <ImageButton
+        android:id="@+id/action_clear_selection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/mcv_arrow_margin"
+        android:background="?selectableItemBackgroundBorderless"
+        android:contentDescription="@string/next_year"
+        android:padding="@dimen/mcv_arrow_padding"
+        app:srcCompat="@drawable/ic_clear_all" />
 
     <ImageButton
         android:id="@+id/next_year"

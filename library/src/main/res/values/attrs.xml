@@ -23,6 +23,9 @@
         </attr>
 
 
+        <attr name="dayIconsColor" format="color" />
+        <attr name="mcv_contentDescription" format="color" />
+        <attr name="yearIconsColor" format="color" />
         <attr name="mcv_allowClickDaysOutsideCurrentMonth" format="boolean" />
         <attr name="mcv_showWeekDays" format="boolean" />
 
