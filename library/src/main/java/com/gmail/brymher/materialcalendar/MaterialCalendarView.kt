@@ -1,6 +1,5 @@
 package com.gmail.brymher.materialcalendar
 
-import android.R
 import android.annotation.SuppressLint
 import android.app.Service
 import android.content.Context
@@ -41,15 +40,31 @@ import kotlin.math.sqrt
 import android.util.Log
 import com.gmail.brymher.materialcalendar.DayView.DEFAULT_TEXT_COLOR
 
-class MaterialCalendarView : ViewGroup {
+open class MaterialCalendarView : ViewGroup {
 
     val TAG = this::class.simpleName ?: "MaterialCalendar"
 
     // variables
     var showTopBar = true
     var accentColor = 0
+    private val dayViewDecorators = mutableListOf<DayViewDecorator>()
 
+    /**
+     * Used for the dynamic calendar height.
+     */
+    var mDynamicHeightEnabled = false
 
+    @Suppress("MemberVisibilityCanBePrivate")
+    protected val inflater: LayoutInflater? by lateInit {
+        context.getSystemService(Service.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    protected open val content by lateInit {
+        inflater?.inflate(R.layout.calendar_view, null, false)
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var selectionColor
         get() = accentColor
         set(value) {
@@ -65,6 +80,7 @@ class MaterialCalendarView : ViewGroup {
             invalidate()
         }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var textColor: Int = DEFAULT_TEXT_COLOR
         set(color) {
             field = color
@@ -74,6 +90,7 @@ class MaterialCalendarView : ViewGroup {
 
     // TODO create pixel int annotation
     // original value was INVALID_TILE_HEIGHT
+    @Suppress("MemberVisibilityCanBePrivate")
     var tileHeight: Int = 40
         /**
          * Set the height of each tile that makes up the calendar.
@@ -201,20 +218,8 @@ class MaterialCalendarView : ViewGroup {
             }
         }
 
-    var leftArrowRes = com.gmail.brymher.materialcalendar.R.drawable.mcv_action_previous
-        set(value) {
-            buttonPast?.setImageResource(value)
-        }
-
-    var rightArrowRes = com.gmail.brymher.materialcalendar.R.drawable.mcv_action_next
-        set(value) {
-            field = value
-            buttonFuture?.setImageResource(value)
-        }
-
-
-    var headerTextAppearance: Int =
-        com.gmail.brymher.materialcalendar.R.style.TextAppearance_MaterialCalendarWidget_Header
+    @Suppress("MemberVisibilityCanBePrivate")
+    var headerTextAppearance: Int = R.style.TextAppearance_MaterialCalendarWidget_Header
         /**
          * @param value The text appearance resource id.
          */
@@ -222,24 +227,96 @@ class MaterialCalendarView : ViewGroup {
             title?.setTextAppearance(context, value)
         }
 
-    var rightArrow: Drawable?
-        get() = buttonFuture?.drawable
+    @Suppress("MemberVisibilityCanBePrivate")
+    var nextYearDrawableRes = R.drawable.ic_fast_foward_inset
         set(value) {
-            buttonFuture?.setImageDrawable(value)
+            nextYearDrawable = context?.getDrawableCompat(value)
+            field = value
         }
 
-    var leftArrow: Drawable?
-        get() = buttonPast?.drawable
+    @Suppress("MemberVisibilityCanBePrivate")
+    var prevYearDrawableRes = R.drawable.ic_fast_reverse_inset
+        set(@DrawableRes value) {
+            prevYearDrawable = context?.getDrawableCompat(value)
+            field = value
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var nextYearDrawable: Drawable? = null
         set(value) {
-            buttonPast?.setImageDrawable(value)
+            value?.setTintCompat(yearIconsColor)
+            btnNextYear?.setImageDrawable(value)
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var prevYearDrawable: Drawable? = null
+        set(value) {
+            value?.setTintCompat(yearIconsColor)
+            btnPrevYear?.setImageDrawable(value)
+        }
+
+
+    @DrawableRes
+    var yearIconsColor: Int = R.color.mcv_text_date_light
+        set(@DrawableRes value) {
+            field = value
+            // update icons
+            @Suppress("SelfAssignment")
+            nextYearDrawableRes = nextYearDrawableRes
+
+            @Suppress("SelfAssignment")
+            prevYearDrawableRes = prevYearDrawableRes
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var leftArrowRes = R.drawable.mcv_action_previous
+        set(value) {
+            leftArrow = context?.getDrawableCompat(value)
+
+            field = value
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var rightArrowRes = R.drawable.mcv_action_next
+        set(value) {
+            rightArrow = context?.getDrawableCompat(value)
+
+            field = value
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var rightArrow: Drawable?
+        get() = btnFuture?.drawable
+        set(value) {
+            value?.setTintCompat(dayIconsColor)
+            btnFuture?.setImageDrawable(value)
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    var leftArrow: Drawable?
+        get() = btnPast?.drawable
+        set(value) {
+            value?.setTintCompat(dayIconsColor)
+            btnPast?.setImageDrawable(value)
+        }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    @DrawableRes
+    var dayIconsColor: Int = R.color.mcv_text_date_light
+        set(@DrawableRes value) {
+            field = value
+            // updates dates icons
+            leftArrowRes = leftArrowRes
+            rightArrowRes = rightArrowRes
         }
 
     var contentDescriptionArrowPast: CharSequence?
-        get() = buttonPast?.contentDescription
+        get() = btnPast?.contentDescription
         set(value) {
-            buttonPast?.contentDescription = value
+            btnPast?.contentDescription = value
         }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var dateTextAppearance: Int
         get() = adapter?.dateTextAppearance ?: 0
         /**
@@ -249,8 +326,8 @@ class MaterialCalendarView : ViewGroup {
             adapter?.dateTextAppearance = value
         }
 
-    var weekDayTextAppearance: Int =
-        com.gmail.brymher.materialcalendar.R.style.TextAppearance_MaterialCalendarWidget_WeekDay
+    @Suppress("MemberVisibilityCanBePrivate")
+    var weekDayTextAppearance: Int = R.style.TextAppearance_MaterialCalendarWidget_WeekDay
         get() = adapter?.weekDayTextAppearance ?: field
         /**
          * @param value The text appearance resource id.
@@ -259,6 +336,8 @@ class MaterialCalendarView : ViewGroup {
             field = value
             adapter?.weekDayTextAppearance = value
         }
+
+    @Suppress("MemberVisibilityCanBePrivate")
     var dayFormatterContentDescription: DayFormatter? = null
         /**
          * Set a formatter for day content description.
@@ -269,6 +348,7 @@ class MaterialCalendarView : ViewGroup {
             adapter?.setDayFormatterContentDescription(value)
         }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var selectedDate: CalendarDay?
         /**
          * Get the currently selected date, or null if no selection. Depending on the selection mode,
@@ -296,7 +376,7 @@ class MaterialCalendarView : ViewGroup {
         set(date) {
             clearSelection()
             date?.let {
-                setDateSelected(date, true)
+                setSelectedDate(date, true)
             }
         }
 
@@ -304,27 +384,11 @@ class MaterialCalendarView : ViewGroup {
      * @param day a CalendarDay to change. Passing null does nothing
      * @param selected true if day should be selected, false to deselect
      */
-    open fun setDateSelected(day: CalendarDay?, selected: Boolean) {
-        if (day == null) {
-            return
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun setSelectedDate(day: CalendarDay?, selected: Boolean) {
+        day?.let {
+            adapter?.setSelectedDate(it, selected)
         }
-        adapter?.setDateSelected(day, selected)
-    }
-
-    private val dayViewDecorators = mutableListOf<DayViewDecorator>()
-
-    /**
-     * Used for the dynamic calendar height.
-     */
-    var mDynamicHeightEnabled = false
-
-
-    val inflater: LayoutInflater? by lateInit {
-        context.getSystemService(Service.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    }
-
-    val content by lateInit {
-        inflater?.inflate(com.gmail.brymher.materialcalendar.R.layout.calendar_view, null, false)
     }
 
     /**
@@ -377,38 +441,46 @@ class MaterialCalendarView : ViewGroup {
     @Suppress("PropertyName")
     var _calendarContentDescription: CharSequence? = null
 
-    /**
-     * Get content description for calendar
-     *
-     * @return calendar's content description
-     */
-    var calendarContentDescription: CharSequence =
-        context.getString(com.gmail.brymher.materialcalendar.R.string.calendar)
+
+    var calendarContentDescription: CharSequence = context.getString(R.string.calendar)
+        /**
+         * Get content description for calendar
+         *
+         * @return calendar's content description
+         */
         get() {
             _calendarContentDescription?.let {
                 return it
             }
             return field
         }
-        set(value) {
-            _calendarContentDescription = value
+        /**
+         * Set content description for calendar
+         *
+         * @param description String to use as content description
+         */
+        set(description) {
+            _calendarContentDescription = description
         }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var visibleWeeksCount: Int by lateInit {
         calendarMode?.visibleWeeksCount ?: DEFAULT_VISIBLE_WEEKS_COUNT
     }
 
-    /**
-     * Set content description for button future
-     *
-     * @param description String to use as content description
-     */
+
     var contentDescriptionArrowFuture: CharSequence?
-        get() = buttonFuture?.contentDescription
-        set(value) {
-            buttonFuture?.contentDescription = value
+        get() = btnFuture?.contentDescription
+        /**
+         * Set content description for button future
+         *
+         * @param description String to use as content description
+         */
+        set(description) {
+            btnFuture?.contentDescription = description
         }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     var showOtherDates: Int = SHOW_ALL
         /**
          * @return int of flags used for showing non-enabled dates
@@ -438,9 +510,9 @@ class MaterialCalendarView : ViewGroup {
          * @see #SHOW_OUT_OF_RANGE
          * @see #SHOW_DECORATED_DISABLED
          */
-        set(@ShowOtherDates value) {
-            field = value
-            adapter?.showOtherDates = value
+        set(@ShowOtherDates showOtherDates) {
+            field = showOtherDates
+            adapter?.showOtherDates = showOtherDates
         }
 
     var currentDate: CalendarDay? = if (isInEditMode) null else CalendarDay.today
@@ -523,8 +595,12 @@ class MaterialCalendarView : ViewGroup {
      * @return All of the currently selected dates.
      * @see MaterialCalendarView.getSelectedDate
      */
-    var selectedDates: List<CalendarDay> = listOf()
+    @Suppress("MemberVisibilityCanBePrivate")
+    var selectedDates: List<CalendarDay>
         get() = adapter?.selectedDates ?: listOf()
+        set(dates) {
+            adapter?.selectedDates = dates
+        }
 
     /**
      * Change the selection mode of the calendar. The default mode is {@linkplain
@@ -626,23 +702,33 @@ class MaterialCalendarView : ViewGroup {
 
     // views
     val topbar by lateInit {
-        content?.findViewById<LinearLayout>(com.gmail.brymher.materialcalendar.R.id.header);
+        content?.findViewById<LinearLayout>(R.id.header);
     }
 
     var title by lateInit {
-        content?.findViewById<TextView>(com.gmail.brymher.materialcalendar.R.id.month_name)
+        content?.findViewById<TextView>(R.id.month_name)
     }
-    var buttonPast by lateInit {
-        content?.findViewById<ImageView>(com.gmail.brymher.materialcalendar.R.id.previous)
+    var btnPast by lateInit {
+        content?.findViewById<ImageView>(R.id.previous)
     }
     var btnNextYear by lateInit {
-        content?.findViewById<ImageButton>(com.gmail.brymher.materialcalendar.R.id.next_year)
+        content?.findViewById<ImageButton>(R.id.next_year)
     }
     var btnPrevYear by lateInit {
-        content?.findViewById<ImageButton>(com.gmail.brymher.materialcalendar.R.id.prev_year)
+        content?.findViewById<ImageButton>(R.id.prev_year)
     }
-    var buttonFuture by lateInit {
-        content?.findViewById<ImageView>(com.gmail.brymher.materialcalendar.R.id.next)
+    var btnFuture by lateInit {
+        content?.findViewById<ImageView>(R.id.next)
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    val btnClearSelection by lateInit {
+        content?.findViewById<ImageButton>(R.id.action_clear_selection)
+    }
+
+    @Suppress("MemberVisibilityCanBePrivate")
+    val btnToggleMode by lateInit {
+        content?.findViewById<ImageButton>(R.id.action_toggle_mode)
     }
 
     val pager: CalendarPager by lateInit {
@@ -652,13 +738,17 @@ class MaterialCalendarView : ViewGroup {
     // listeners
     private val onClickListener: OnClickListener? =
         OnClickListener { v ->
-            if (v === buttonFuture) {
-                nextDay(true)
-            } else if (v === buttonPast) {
-                previousDay(true)
-            } else if (v === btnNextYear) {
-                nextYear(true)
-            } else if (v === btnPrevYear) previousYear(true)
+            when (v) {
+                btnFuture -> nextDay(true)
+
+                btnPast -> previousDay(true)
+
+                btnNextYear -> nextYear(true)
+
+                btnPrevYear -> previousYear(true)
+                btnClearSelection -> clearSelection()
+                btnToggleMode -> toggleCalendarMode()
+            }
         }
 
     private val pageChangeListener: ViewPager.OnPageChangeListener = object :
@@ -704,7 +794,7 @@ class MaterialCalendarView : ViewGroup {
         init(context, attrs)
     }
 
-    fun init(context: Context, attrs: AttributeSet? = null) {
+    private fun init(context: Context, attrs: AttributeSet? = null) {
         if (isInEditMode) AndroidThreeTen.init(context)
 
         initCompat()
@@ -744,7 +834,6 @@ class MaterialCalendarView : ViewGroup {
                     monthView,
                     LayoutParams(visibleWeeksCount + CalendarPagerView.DAY_NAMES_ROW)
                 )
-
             }
 
         }
@@ -759,12 +848,12 @@ class MaterialCalendarView : ViewGroup {
             page.alpha = sqrt(1 - abs(pos).toDouble()).toFloat()
         }
 
-        pager.id = com.gmail.brymher.materialcalendar.R.id.mcv_pager
+        pager.id = R.id.mcv_pager
         pager.offscreenPageLimit = 1
     }
 
-    fun initCompat() {
 
+    private fun initCompat() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             //If we're on good Android versions, turn off clipping for cool effects
             clipToPadding = false
@@ -777,21 +866,28 @@ class MaterialCalendarView : ViewGroup {
 
     }
 
-
+    @Suppress("MemberVisibilityCanBePrivate")
     fun initControls() {
-        buttonPast?.setOnClickListener(onClickListener)
-        buttonFuture?.setOnClickListener(onClickListener)
+        btnPast?.setOnClickListener(onClickListener)
+        btnFuture?.setOnClickListener(onClickListener)
         btnNextYear?.setOnClickListener(onClickListener)
         btnPrevYear?.setOnClickListener(onClickListener)
+        btnClearSelection?.setOnClickListener(onClickListener)
+        btnToggleMode?.setOnClickListener(onClickListener)
     }
 
-
+    /** TODO
+     * this update ui is misleading and does not update the whole UI
+     * as one might expect
+     * */
     fun updateUi() {
         titleChanger?.change(currentMonth)
-        enableView(buttonPast, canGoBack)
-        enableView(buttonFuture, canGoForward)
+        enableView(btnPast, canGoBack)
+        enableView(btnFuture, canGoForward)
+
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun dpToPx(dp: Int): Int {
         return TypedValue.applyDimension(
             TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), resources.displayMetrics
@@ -813,6 +909,7 @@ class MaterialCalendarView : ViewGroup {
         return maxDate
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun setupChildren() {
         addView(topbar)
         // restore this if the view display is all wrong
@@ -827,36 +924,29 @@ class MaterialCalendarView : ViewGroup {
 
     }
 
-
     open fun updateViewPager(position: Int, smoothScroll: Boolean) {
         pager.setCurrentItem(pager.currentItem + position, smoothScroll)
     }
 
+
+    @Suppress("MemberVisibilityCanBePrivate")
     open fun nextDay(smoothScroll: Boolean) {
         updateViewPager(1, smoothScroll)
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     open fun previousDay(smoothScroll: Boolean) {
         updateViewPager(-1, smoothScroll)
     }
 
-
+    @Suppress("MemberVisibilityCanBePrivate")
     open fun nextYear(smoothScroll: Boolean) {
         updateViewPager(yearUpdateDifference, smoothScroll)
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
     fun previousYear(smoothScroll: Boolean) {
         updateViewPager(-yearUpdateDifference, smoothScroll)
-    }
-
-
-    /**
-     * Set content description for calendar
-     *
-     * @param description String to use as content description
-     */
-    open fun setContentDescriptionCalendar(description: CharSequence) {
-        calendarContentDescription = description
     }
 
     /**
@@ -909,6 +999,23 @@ class MaterialCalendarView : ViewGroup {
         setWeekDayLabels(resources.getTextArray(arrayRes))
     }
 
+    @Suppress("MemberVisibilityCanBePrivate")
+    fun toggleCalendarMode() {
+        calendarMode = when (calendarMode) {
+            CalendarMode.MONTHS -> CalendarMode.WEEKS
+
+            CalendarMode.WEEKS -> CalendarMode.MONTHS
+
+            else -> CalendarMode.MONTHS
+        }
+
+        newState()?.apply {
+            setFirstDayOfWeek(firstDayOfWeek)
+            setCalendarDisplayMode(calendarMode)
+            setShowWeekDays(showWeekDays)
+            commit(this@MaterialCalendarView)
+        }
+    }
 
     /**
      * @return true if allow click on days outside current month displayed
@@ -1030,14 +1137,11 @@ class MaterialCalendarView : ViewGroup {
      * Clear the currently selected date(s)
      */
     open fun clearSelection() {
-
         adapter?.clearSelections()
 
         for (day in selectedDates) {
             dispatchOnDateSelected(day, false)
         }
-
-
     }
 
     open fun setRangeDates(min: CalendarDay?, max: CalendarDay?) {
@@ -1206,7 +1310,7 @@ class MaterialCalendarView : ViewGroup {
     fun onDateClicked(date: CalendarDay, nowSelected: Boolean) {
         when (selectionMode) {
             SELECTION_MODE_MULTIPLE -> {
-                adapter?.setDateSelected(date, nowSelected)
+                adapter?.setSelectedDate(date, nowSelected)
                 dispatchOnDateSelected(date, nowSelected)
             }
             SELECTION_MODE_RANGE -> {
@@ -1214,7 +1318,7 @@ class MaterialCalendarView : ViewGroup {
                     when (currentSelection.size) {
                         0 -> {
                             // Selecting the first date of a range
-                            adapter?.setDateSelected(date, nowSelected)
+                            adapter?.setSelectedDate(date, nowSelected)
                             dispatchOnDateSelected(date, nowSelected)
                         }
                         1 -> {
@@ -1224,7 +1328,7 @@ class MaterialCalendarView : ViewGroup {
                             when {
                                 firstDaySelected == date -> {
                                     // Right now, we are not supporting a range of one day, so we are removing the day instead.
-                                    adapter?.setDateSelected(date, nowSelected)
+                                    adapter?.setSelectedDate(date, nowSelected)
                                     dispatchOnDateSelected(date, nowSelected)
                                 }
                                 firstDaySelected.isAfter(date) -> {
@@ -1242,7 +1346,7 @@ class MaterialCalendarView : ViewGroup {
                         else -> {
                             // Clearing selection and making a selection of the new date.
                             adapter?.clearSelections()
-                            adapter?.setDateSelected(date, nowSelected)
+                            adapter?.setSelectedDate(date, nowSelected)
                             dispatchOnDateSelected(date, nowSelected)
                         }
                     }
@@ -1252,12 +1356,12 @@ class MaterialCalendarView : ViewGroup {
             }
             SELECTION_MODE_SINGLE -> {
                 adapter?.clearSelections()
-                adapter?.setDateSelected(date, true)
+                adapter?.setSelectedDate(date, true)
                 dispatchOnDateSelected(date, true)
             }
             else -> {
                 adapter?.clearSelections()
-                adapter?.setDateSelected(date, true)
+                adapter?.setSelectedDate(date, true)
                 dispatchOnDateSelected(date, true)
             }
         }
@@ -1807,7 +1911,7 @@ class MaterialCalendarView : ViewGroup {
         allowClickDaysOutsideCurrentMonth = ss.allowClickDaysOutsideCurrentMonth
         clearSelection()
         for (calendarDay in ss.selectedDates) {
-            setDateSelected(calendarDay, true)
+            setSelectedDate(calendarDay, true)
         }
         setTopbarVisible(ss.topbarVisible)
         selectionMode = ss.selectionMode
@@ -1826,7 +1930,7 @@ class MaterialCalendarView : ViewGroup {
     fun updateAttrs(attrs: AttributeSet) {
         val a = context.theme.obtainStyledAttributes(
             attrs,
-            com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView,
+            R.styleable.MaterialCalendarView,
             0,
             0
         )
@@ -1834,17 +1938,17 @@ class MaterialCalendarView : ViewGroup {
         try {
 
             val calendarModeIndex = a.getInteger(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_calendarMode,
+                R.styleable.MaterialCalendarView_mcv_calendarMode,
                 0
             )
 
             firstDayOfWeekInt = a.getInteger(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_firstDayOfWeek,
+                R.styleable.MaterialCalendarView_mcv_firstDayOfWeek,
                 firstDayOfWeekInt
             )
 
             titleChanger?.orientation = a.getInteger(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_titleAnimationOrientation,
+                R.styleable.MaterialCalendarView_mcv_titleAnimationOrientation,
                 VERTICAL
             )
 
@@ -1855,7 +1959,7 @@ class MaterialCalendarView : ViewGroup {
             }
 
             showWeekDays = a.getBoolean(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_showWeekDays,
+                R.styleable.MaterialCalendarView_mcv_showWeekDays,
                 true
             )
 
@@ -1867,17 +1971,19 @@ class MaterialCalendarView : ViewGroup {
             }
 
             selectionMode = a.getInteger(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_selectionMode,
+                R.styleable.MaterialCalendarView_mcv_selectionMode,
                 SELECTION_MODE_SINGLE
             )
 
+            calendarContentDescription
+
             tileSize = a.getLayoutDimension(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_tileSize,
+                R.styleable.MaterialCalendarView_mcv_tileSize,
                 INVALID_TILE_DIMENSION
             )
 
             var tWidth = a.getLayoutDimension(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_tileWidth,
+                R.styleable.MaterialCalendarView_mcv_tileWidth,
                 INVALID_TILE_DIMENSION
             )
 
@@ -1886,24 +1992,34 @@ class MaterialCalendarView : ViewGroup {
             }
 
             val tHeight = a.getLayoutDimension(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_tileHeight,
+                R.styleable.MaterialCalendarView_mcv_tileHeight,
                 INVALID_TILE_DIMENSION
             )
             if (tileHeight > INVALID_TILE_DIMENSION) {
                 tileHeight = tHeight
             }
             leftArrowRes = a.getResourceId(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_leftArrow,
+                R.styleable.MaterialCalendarView_mcv_leftArrow,
                 leftArrowRes
             )
 
             rightArrowRes = a.getResourceId(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_rightArrow,
+                R.styleable.MaterialCalendarView_mcv_rightArrow,
                 rightArrowRes
             )
 
+            yearIconsColor = a.getResourceId(
+                R.styleable.MaterialCalendarView_yearIconsColor,
+                yearIconsColor
+            )
+
+            dayIconsColor = a.getResourceId(
+                R.styleable.MaterialCalendarView_dayIconsColor,
+                dayIconsColor
+            )
+
             selectionColor = a.getColor(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_selectionColor,
+                R.styleable.MaterialCalendarView_mcv_selectionColor,
                 getThemeAccentColor(context)
             )
 
@@ -1919,39 +2035,39 @@ class MaterialCalendarView : ViewGroup {
                 }
 
             headerTextAppearance = a.getResourceId(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_headerTextAppearance,
+                R.styleable.MaterialCalendarView_mcv_headerTextAppearance,
                 headerTextAppearance
             )
 
             weekDayTextAppearance =
                 a.getResourceId(
-                    com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_weekDayTextAppearance,
+                    R.styleable.MaterialCalendarView_mcv_weekDayTextAppearance,
                     weekDayTextAppearance
                 )
 
             dateTextAppearance = a.getResourceId(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_dateTextAppearance,
-                com.gmail.brymher.materialcalendar.R.style.TextAppearance_MaterialCalendarWidget_Date
+                R.styleable.MaterialCalendarView_mcv_dateTextAppearance,
+                R.style.TextAppearance_MaterialCalendarWidget_Date
             )
 
             showOtherDates = a.getInteger(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_showOtherDates,
+                R.styleable.MaterialCalendarView_mcv_showOtherDates,
                 SHOW_DEFAULTS
             )
 
             allowClickDaysOutsideCurrentMonth = a.getBoolean(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_allowClickDaysOutsideCurrentMonth,
+                R.styleable.MaterialCalendarView_mcv_allowClickDaysOutsideCurrentMonth,
                 true
             )
 
             textColor = a.getResourceId(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_dateTextColor,
+                R.styleable.MaterialCalendarView_dateTextColor,
                 textColor
             )
 
 
             showTopBar = a.getBoolean(
-                com.gmail.brymher.materialcalendar.R.styleable.MaterialCalendarView_mcv_showTopBar,
+                R.styleable.MaterialCalendarView_mcv_showTopBar,
                 true
             )
 
@@ -1977,7 +2093,7 @@ class MaterialCalendarView : ViewGroup {
         const val SELECTION_MODE_NONE = 0
 
         @JvmStatic
-        val DEFAULT_DAY_TEXT_COLOR = DayView.DEFAULT_TEXT_COLOR
+        val DEFAULT_DAY_TEXT_COLOR = DEFAULT_TEXT_COLOR
 
         /**
          * Selection mode that allows one selected date at one time. This is the default mode.
@@ -2065,7 +2181,7 @@ class MaterialCalendarView : ViewGroup {
          * @return true if the out of range flag is set
          */
         @JvmStatic
-        open fun showOutOfRange(@ShowOtherDates showOtherDates: Int): Boolean {
+        fun showOutOfRange(@ShowOtherDates showOtherDates: Int): Boolean {
             return showOtherDates and SHOW_OUT_OF_RANGE != 0
         }
 
@@ -2074,7 +2190,7 @@ class MaterialCalendarView : ViewGroup {
          * view is set to [WRAP_CONTENT][ViewGroup.LayoutParams.WRAP_CONTENT]
          */
         const val DEFAULT_TILE_SIZE_DP = 44
-        private const val DEFAULT_DAYS_IN_WEEK = 7
+        private const val DAYS_IN_WEEK = 7
         private const val DEFAULT_MAX_WEEKS = 6
         private const val DAY_NAMES_ROW = 1
 
@@ -2093,4 +2209,20 @@ class MaterialCalendarView : ViewGroup {
 
 
     }
+}
+
+private fun Context.getDrawableCompat(value: Int): Drawable? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        getDrawable(value)
+    } else {
+        resources.getDrawable(value)
+    }
+}
+
+
+fun Drawable.setTintCompat(@DrawableRes value: Int) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        setTint(value)
+    }
+
 }

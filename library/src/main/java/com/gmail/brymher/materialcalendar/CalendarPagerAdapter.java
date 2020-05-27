@@ -136,6 +136,7 @@ public abstract class CalendarPagerAdapter<V extends CalendarPagerView> extends 
         if (firstViewDay == null) {
             return POSITION_NONE;
         }
+        //noinspection unchecked
         int index = indexOf((V) object);
         if (index < 0) {
             return POSITION_NONE;
@@ -292,6 +293,8 @@ public abstract class CalendarPagerAdapter<V extends CalendarPagerView> extends 
         invalidateSelectedDates();
     }
 
+
+    @SuppressWarnings("WeakerAccess")
     public DateRangeIndex getRangeIndex() {
         return rangeIndex;
     }
@@ -308,7 +311,7 @@ public abstract class CalendarPagerAdapter<V extends CalendarPagerView> extends 
      * @param selected Whether to select or un-select the day from the list.
      * @see CalendarPagerAdapter#selectRange(CalendarDay, CalendarDay)
      */
-    public void setDateSelected(CalendarDay day, boolean selected) {
+    public void setSelectedDate(CalendarDay day, boolean selected) {
         if (selected) {
             if (!selectedDates.contains(day)) {
                 selectedDates.add(day);
@@ -328,7 +331,7 @@ public abstract class CalendarPagerAdapter<V extends CalendarPagerView> extends 
      *
      * @param first The first day of the range.
      * @param last  The last day in the range.
-     * @see CalendarPagerAdapter#setDateSelected(CalendarDay, boolean)
+     * @see CalendarPagerAdapter#setSelectedDate(CalendarDay, boolean)
      */
     public void selectRange(final CalendarDay first, final CalendarDay last) {
         selectedDates.clear();
@@ -374,6 +377,14 @@ public abstract class CalendarPagerAdapter<V extends CalendarPagerView> extends 
     @NonNull
     public List<CalendarDay> getSelectedDates() {
         return Collections.unmodifiableList(selectedDates);
+    }
+
+    /**TODO
+     * test not sure if this affects the selected dates
+     * on the fly
+     * */
+    public void setSelectedDates(List<CalendarDay> dates) {
+        selectedDates = dates;
     }
 
     protected int getDateTextAppearance() {
