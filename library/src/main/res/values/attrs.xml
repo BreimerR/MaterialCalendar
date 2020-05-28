@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <declare-styleable name="MaterialCalendarView">
 
@@ -23,6 +23,7 @@
         </attr>
 
 
+        <attr name="contentDescription" format="string" />
         <attr name="dayIconsColor" format="color" />
         <attr name="mcv_contentDescription" format="color" />
         <attr name="yearIconsColor" format="color" />

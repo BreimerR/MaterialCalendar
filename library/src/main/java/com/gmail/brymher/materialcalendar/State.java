@@ -9,6 +9,7 @@ public class State {
     public final CalendarDay maxDate;
     public final boolean cacheCurrentPosition;
     public boolean showWeekDays = true;
+    public int showOtherDates = MaterialCalendarView.SHOW_DEFAULTS;
 
     State(final StateBuilder builder) {
         calendarMode = builder.calendarMode;

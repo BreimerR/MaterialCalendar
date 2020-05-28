@@ -407,11 +407,37 @@ open class MaterialCalendarView : ViewGroup {
     var allowClickDaysOutsideCurrentMonth = true
 
     private var showWeekDays = true
+        set(value) {
+            adapter?.showWeekDays = value
+            field = value
+        }
 
     var state: State? = null
+        set(value) {
+            // Save states parameters
+            value?.let {
+                calendarMode = it.calendarMode
+                firstDayOfWeek = it.firstDayOfWeek
+                minDate = it.minDate
+                maxDate = it.maxDate
+                showWeekDays = value.showWeekDays
+
+                field = value
+            }
+
+        }
 
 
     var adapter: CalendarPagerAdapter<*>? = null
+        set(value) {
+            field = if (field == null) {
+                value
+            } else {
+                field!!.migrateStateAndReturn(value)
+            }
+
+            pager.adapter = field
+        }
 
 
     /**
@@ -420,6 +446,19 @@ open class MaterialCalendarView : ViewGroup {
      * @return Whichever mode the calendar is currently in.
      */
     var calendarMode: CalendarMode? = CalendarMode.MONTHS
+        set(value) {
+            var tileHeight = INVALID_TILE_DIMENSION
+            // Reset height params after mode change
+            value?.let {
+                tileHeight =
+                    if (showWeekDays) it.visibleWeeksCount + CalendarPagerView.DAY_NAMES_ROW else it.visibleWeeksCount
+            }
+
+            pager.layoutParams = LayoutParams(tileHeight)
+
+            field = value
+        }
+
     var currentMonth: CalendarDay? = if (isInEditMode) null else CalendarDay.today
 
     /**
@@ -792,9 +831,6 @@ open class MaterialCalendarView : ViewGroup {
 
         currentDate = currentMonth
 
-        adapter?.showWeekDays = showWeekDays
-
-
         // Adapter is created while parsing the TypedArray attrs, so setup has to happen after
         setupChildren()
 
@@ -992,12 +1028,12 @@ open class MaterialCalendarView : ViewGroup {
             else -> CalendarMode.MONTHS
         }
 
-        newState()?.apply {
-            setFirstDayOfWeek(firstDayOfWeek)
-            setCalendarDisplayMode(calendarMode)
-            setShowWeekDays(showWeekDays)
-            commit(this@MaterialCalendarView)
-        }
+        newState {
+            it.firstDayOfWeek = firstDayOfWeek
+            it.setCalendarDisplayMode(calendarMode)
+            it.showWeekDays = showWeekDays
+        }.commit(this)
+
     }
 
     /**
@@ -1650,14 +1686,24 @@ open class MaterialCalendarView : ViewGroup {
     /**
      * Preserve the current parameters of the Material Calendar View.
      */
-    open fun state(): State? {
+    open fun state(builder: ((StateBuilder?) -> Unit)? = null): State? {
+
+        builder?.let {
+            it.invoke(state?.edit())
+        }
+
         return state
     }
 
     /**
      * Initialize the parameters from scratch.
      */
-    fun newState(): StateBuilder? {
+    fun newState(builder: ((StateBuilder) -> Unit)? = null): StateBuilder {
+        builder?.let {
+            val state = StateBuilder()
+            builder.invoke(state)
+            return state
+        }
         return StateBuilder()
     }
 
@@ -1672,8 +1718,7 @@ open class MaterialCalendarView : ViewGroup {
 
                 if (calendarMode == CalendarMode.MONTHS && currentlySelectedDate != null) {
                     // Going from months to weeks
-                    val lastVisibleCalendar = calendarDayToShow?.date
-                    val lastVisibleCalendarDay = CalendarDay.from(lastVisibleCalendar?.plusDays(1))
+                    val lastVisibleCalendarDay = CalendarDay.from(calendarDayToShow?.date?.plusDays(1))
 
                     calendarDayToShow?.let {
                         if (
@@ -1719,45 +1764,20 @@ open class MaterialCalendarView : ViewGroup {
             }
         }
         this.state = state
-        // Save states parameters
-        calendarMode = state.calendarMode
-        firstDayOfWeek = state.firstDayOfWeek
-        minDate = state.minDate
-        maxDate = state.maxDate
-        // showWeekDays = state.showWeekDays
-
         // Recreate adapter
-        val newAdapter: CalendarPagerAdapter<*> = when (calendarMode) {
+        adapter = when (calendarMode) {
             CalendarMode.MONTHS -> MonthPagerAdapter(this)
             CalendarMode.WEEKS -> WeekPagerAdapter(this)
             else -> throw IllegalArgumentException("Provided display mode which is not yet implemented")
         }
-        adapter = if (adapter == null) {
-            newAdapter
-        } else {
-            adapter!!.migrateStateAndReturn(newAdapter)
-        }
 
-        adapter?.showWeekDays = showWeekDays
-        pager.adapter = adapter
         setRangeDates(minDate, maxDate)
-
-        var tileHeight = INVALID_TILE_DIMENSION
-        // Reset height params after mode change
-        calendarMode?.let {
-            tileHeight =
-                if (showWeekDays) it.visibleWeeksCount + CalendarPagerView.DAY_NAMES_ROW else it.visibleWeeksCount
-        }
-
-        pager.layoutParams = LayoutParams(tileHeight)
-
 
         adapter?.let {
             if (selectionMode == SELECTION_MODE_SINGLE && it.selectedDates.isNotEmpty()) {
                 currentDate = it.selectedDates[0]
             }
         }
-
 
         calendarDayToShow?.let { day ->
             adapter?.let {
@@ -1766,6 +1786,7 @@ open class MaterialCalendarView : ViewGroup {
         }
 
         invalidateDecorators()
+
         updateUi()
     }
 
@@ -1790,72 +1811,6 @@ open class MaterialCalendarView : ViewGroup {
      * @param tileHeight view height in number of tiles
      */
         (tileHeight: Int) : MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, tileHeight)
-
-
-    class SavedState : BaseSavedState {
-
-        var showOtherDates: Int = SHOW_DEFAULTS
-        var allowClickDaysOutsideCurrentMonth = true
-
-
-        var minDate: CalendarDay? = null
-        var maxDate: CalendarDay? = null
-
-        var topbarVisible = true
-        var selectionMode = SELECTION_MODE_SINGLE
-        var dynamicHeightEnabled = false
-        var currentMonth: CalendarDay? = null
-
-        var cacheCurrentPosition = false
-
-        var selectedDates: List<CalendarDay> = ArrayList()
-
-        constructor(parcelable: Parcelable?) : super(parcelable)
-
-        constructor(`in`: Parcel) : super(`in`) {
-            showOtherDates = `in`.readInt()
-            allowClickDaysOutsideCurrentMonth = `in`.readByte().toInt() != 0
-            val loader = CalendarDay::class.java.classLoader
-            minDate = `in`.readParcelable(loader)
-            maxDate = `in`.readParcelable(loader)
-            `in`.readTypedList(selectedDates, CalendarDay.CREATOR)
-            topbarVisible = `in`.readInt() == 1
-            selectionMode = `in`.readInt()
-            dynamicHeightEnabled = `in`.readInt() == 1
-            currentMonth = `in`.readParcelable(loader)
-            cacheCurrentPosition = `in`.readByte().toInt() != 0
-        }
-
-        override fun writeToParcel(out: Parcel, flags: Int) {
-            super.writeToParcel(out, flags)
-            out.writeInt(showOtherDates)
-            out.writeByte((if (allowClickDaysOutsideCurrentMonth) 1 else 0).toByte())
-            out.writeParcelable(minDate, 0)
-            out.writeParcelable(maxDate, 0)
-            out.writeTypedList(selectedDates)
-            out.writeInt(if (topbarVisible) 1 else 0)
-            out.writeInt(selectionMode)
-            out.writeInt(if (dynamicHeightEnabled) 1 else 0)
-            out.writeParcelable(currentMonth, 0)
-            out.writeByte((if (cacheCurrentPosition) 1 else 0).toByte())
-        }
-
-
-        companion object {
-
-            @JvmStatic
-            val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
-                override fun createFromParcel(`in`: Parcel): SavedState? {
-                    return SavedState(`in`)
-                }
-
-                override fun newArray(size: Int): Array<SavedState?> {
-                    return arrayOfNulls(size)
-                }
-            }
-
-        }
-    }
 
     /**
      * [IntDef] annotation for showOtherDates.
@@ -1882,11 +1837,14 @@ open class MaterialCalendarView : ViewGroup {
     override fun onRestoreInstanceState(state: Parcelable) {
         val ss = state as SavedState
         super.onRestoreInstanceState(ss.superState)
-        state()?.apply {
-            edit().setMinimumDate(ss.minDate)
-                .setMaximumDate(ss.maxDate)
-                .isCacheCalendarPositionEnabled(ss.cacheCurrentPosition)
-                .commit(this@MaterialCalendarView)
+
+
+        state {
+            it?.showOtherDates = ss.showOtherDates
+            it?.setMinimumDate(ss.minDate)
+            it?.setMaximumDate(ss.maxDate)
+            it?.isCacheCalendarPositionEnabled(ss.cacheCurrentPosition)
+            it?.commit(this)
         }
 
         showOtherDates = ss.showOtherDates
@@ -1945,12 +1903,11 @@ open class MaterialCalendarView : ViewGroup {
                 true
             )
 
-            newState()?.apply {
-                setFirstDayOfWeek(firstDayOfWeek)
-                    .setCalendarDisplayMode(CalendarMode.values()[calendarModeIndex])
-                    .setShowWeekDays(showWeekDays)
-                    .commit(this@MaterialCalendarView)
-            }
+            newState {
+                it.firstDayOfWeek = firstDayOfWeek
+                it.setCalendarDisplayMode(CalendarMode.values()[calendarModeIndex])
+                it.showWeekDays = showWeekDays
+            }.commit(this)
 
             selectionMode = a.getInteger(
                 R.styleable.MaterialCalendarView_mcv_selectionMode,
@@ -2120,6 +2077,7 @@ open class MaterialCalendarView : ViewGroup {
         /**
          * The default flags for showing non-enabled dates. Currently only shows [ ][.SHOW_DECORATED_DISABLED]
          */
+
         const val SHOW_DEFAULTS = SHOW_DECORATED_DISABLED
 
         /**

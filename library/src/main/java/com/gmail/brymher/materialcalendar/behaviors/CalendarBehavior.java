@@ -182,7 +182,7 @@ public class CalendarBehavior extends ViewOffsetBehavior<MaterialCalendarView> {
             return;
         }
         calendarMode = null;
-        calendarView.state().edit()
+        calendarView.state(null).edit()
                 .setCalendarDisplayMode(CalendarMode.MONTHS)
                 .commit(calendarView);
         setTopAndBottomOffset(-calendarLineHeight * (weekOfMonth - 1));
@@ -194,7 +194,7 @@ public class CalendarBehavior extends ViewOffsetBehavior<MaterialCalendarView> {
             return;
         }
         calendarMode = null;
-        calendarView.state().edit()
+        calendarView.state(null).edit()
                 .setCalendarDisplayMode(CalendarMode.WEEKS)
                 .commit(calendarView);
         setTopAndBottomOffset(0);

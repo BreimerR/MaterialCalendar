@@ -15,6 +15,7 @@ public class StateBuilder {
     public CalendarDay minDate = null;
     public CalendarDay maxDate = null;
     public boolean showWeekDays;
+    public int showOtherDates = MaterialCalendarView.SHOW_DEFAULTS;
 
     public StateBuilder() {
         calendarMode = CalendarMode.MONTHS;
