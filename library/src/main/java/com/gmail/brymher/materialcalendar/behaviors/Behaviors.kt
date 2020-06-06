@@ -1,28 +1,22 @@
 package com.gmail.brymher.materialcalendar.behaviors
 
 import android.content.Context
-import android.graphics.Rect
 import android.util.AttributeSet
-import android.view.Gravity
 import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.math.MathUtils
-import androidx.core.view.GravityCompat
-import androidx.core.view.ScrollingView
 import androidx.recyclerview.widget.RecyclerView
-import com.gmail.brymher.behaviors.DependencyBehavior
+import com.gmail.brymher.behaviors.BelowDependencyBehavior
 import com.gmail.brymher.behaviors.ViewOffsetBehavior
 import com.gmail.brymher.materialcalendar.MaterialCalendarView
 import com.google.android.material.appbar.AppBarLayout
-import org.w3c.dom.Attr
 
 
 class Behaviors {
 
 
-    abstract class AppBarBehavior<T : View>(context: Context, attributeSet: AttributeSet) :
-        DependencyBehavior<T>(context, attributeSet) {
+    abstract class AppBarBehaviorBelow<T : View>(context: Context, attributeSet: AttributeSet) :
+        BelowDependencyBehavior<T>(context, attributeSet) {
 
         override fun dependsOn(
             parent: CoordinatorLayout,
@@ -35,10 +29,10 @@ class Behaviors {
     }
 
     class BelowAppBar(context: Context, attrs: AttributeSet) :
-        AppBarBehavior<MaterialCalendarView>(context, attrs)
+        AppBarBehaviorBelow<MaterialCalendarView>(context, attrs)
 
     abstract class BelowMaterialCalendar<T : View>(context: Context, attrs: AttributeSet) :
-        DependencyBehavior<T>(context, attrs) {
+        BelowDependencyBehavior<T>(context, attrs) {
 
         override fun checkView(view: View?): Boolean {
             return view is MaterialCalendarView

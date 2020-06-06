@@ -39,7 +39,9 @@ import kotlin.math.min
 import kotlin.math.sqrt
 import android.util.Log
 import androidx.core.graphics.drawable.DrawableCompat
+import com.gmail.brymher.materialcalendar.utils.getDrawableCompat
 import com.gmail.brymher.materialcalendar.DayView.DEFAULT_TEXT_COLOR
+import com.gmail.brymher.materialcalendar.utils.setTintCompat
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class MaterialCalendarView : ViewGroup {
@@ -2151,15 +2153,3 @@ open class MaterialCalendarView : ViewGroup {
     }
 }
 
-private fun Context.getDrawableCompat(value: Int): Drawable? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        getDrawable(value)
-    } else {
-        resources.getDrawable(value)
-    }
-}
-
-
-fun Drawable.setTintCompat(@DrawableRes value: Int) {
-    DrawableCompat.setTint(this, value)
-}
