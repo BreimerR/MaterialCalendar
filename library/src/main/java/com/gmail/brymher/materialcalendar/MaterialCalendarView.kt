@@ -756,8 +756,8 @@ open class MaterialCalendarView : ViewGroup {
         content?.findViewById<ImageButton>(R.id.action_toggle_mode)
     }
 
-    val pager: CalendarPager by lateInit {
-        CalendarPager(context)
+    val pager: CalendarViewPager by lateInit {
+        CalendarViewPager(context)
     }
 
     // listeners
@@ -1673,7 +1673,7 @@ open class MaterialCalendarView : ViewGroup {
      * @param pagingEnabled pass false to disable paging, true to enable (default)
      */
     open fun setPagingEnabled(pagingEnabled: Boolean) {
-        pager.isPagingEnabled = pagingEnabled
+        pager.pagingEnabled = pagingEnabled
         updateUi()
     }
 
@@ -1682,7 +1682,7 @@ open class MaterialCalendarView : ViewGroup {
      * @return true if swiping months is enabled, false if disabled. Default is true.
      */
     open fun isPagingEnabled(): Boolean {
-        return pager.isPagingEnabled
+        return pager.pagingEnabled
     }
 
     /**
