@@ -38,7 +38,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 import android.util.Log
-import androidx.core.graphics.drawable.DrawableCompat
 import com.gmail.brymher.materialcalendar.utils.getDrawableCompat
 import com.gmail.brymher.materialcalendar.DayView.DEFAULT_TEXT_COLOR
 import com.gmail.brymher.materialcalendar.utils.setTintCompat
@@ -46,6 +45,7 @@ import com.gmail.brymher.materialcalendar.utils.setTintCompat
 @Suppress("MemberVisibilityCanBePrivate")
 open class MaterialCalendarView : ViewGroup {
 
+    @Suppress("PrivatePropertyName")
     private val TAG = this::class.simpleName ?: "MaterialCalendar"
 
     // variables
@@ -133,11 +133,11 @@ open class MaterialCalendarView : ViewGroup {
 
 
     val isMonthMode: Boolean
-        get() = calendarMode == CalendarMode.MONTHS
+        get() = calendarMode == Mode.MONTHS
 
     @Suppress("unused")
     val isWeekMode: Boolean
-        get() = calendarMode == CalendarMode.WEEKS
+        get() = calendarMode == Mode.WEEKS
 
     /**
      * @param tileSizeDp the new size for each tile in dips
@@ -443,11 +443,11 @@ open class MaterialCalendarView : ViewGroup {
 
 
     /**
-     * Get the current [CalendarMode] set of the Calendar.
+     * Get the current [Mode] set of the Calendar.
      *
      * @return Whichever mode the calendar is currently in.
      */
-    var calendarMode: CalendarMode? = CalendarMode.MONTHS
+    var calendarMode: Mode? = Mode.MONTHS
         set(value) {
             var tileHeight = INVALID_TILE_DIMENSION
             // Reset height params after mode change
@@ -711,7 +711,7 @@ open class MaterialCalendarView : ViewGroup {
     val yearUpdateDifference
         get(): Int {
             var updateDifference = 12
-            if (calendarMode == CalendarMode.WEEKS) updateDifference = 52
+            if (calendarMode == Mode.WEEKS) updateDifference = 52
             return updateDifference
         }
 
@@ -825,7 +825,7 @@ open class MaterialCalendarView : ViewGroup {
 
         initCompat()
 
-        attrs?.let(::updateAttrs)
+        attrs?.let(::updateAttributes)
 
         initControls()
 
@@ -1023,11 +1023,11 @@ open class MaterialCalendarView : ViewGroup {
     @Suppress("MemberVisibilityCanBePrivate")
     fun toggleCalendarMode() {
         calendarMode = when (calendarMode) {
-            CalendarMode.MONTHS -> CalendarMode.WEEKS
+            Mode.MONTHS -> Mode.WEEKS
 
-            CalendarMode.WEEKS -> CalendarMode.MONTHS
+            Mode.WEEKS -> Mode.MONTHS
 
-            else -> CalendarMode.MONTHS
+            else -> Mode.MONTHS
         }
 
         newState {
@@ -1563,11 +1563,11 @@ open class MaterialCalendarView : ViewGroup {
 
 
     open fun getWeekCountBasedOnMode(): Int {
-        var weekCount = CalendarMode.MONTHS.visibleWeeksCount
+        var weekCount = Mode.MONTHS.visibleWeeksCount
 
         calendarMode?.let {
             weekCount = it.visibleWeeksCount
-            val isInMonthsMode = it == CalendarMode.MONTHS
+            val isInMonthsMode = it == Mode.MONTHS
             if (isInMonthsMode && dynamicHeightEnabled && adapter != null) {
                 var a = adapter!!
                 val cal = adapter!!.getItem(pager.currentItem).date
@@ -1718,7 +1718,7 @@ open class MaterialCalendarView : ViewGroup {
             if (calendarMode != state.calendarMode) {
                 val currentlySelectedDate = selectedDate
 
-                if (calendarMode == CalendarMode.MONTHS && currentlySelectedDate != null) {
+                if (calendarMode == Mode.MONTHS && currentlySelectedDate != null) {
                     // Going from months to weeks
                     val lastVisibleCalendarDay = CalendarDay.from(calendarDayToShow?.date?.plusDays(1))
 
@@ -1734,7 +1734,7 @@ open class MaterialCalendarView : ViewGroup {
                         }
                     }
 
-                } else if (calendarMode == CalendarMode.WEEKS) {
+                } else if (calendarMode == Mode.WEEKS) {
                     // Going from weeks to months
                     val lastVisibleCalendar = calendarDayToShow?.date
                     val lastVisibleCalendarDay =
@@ -1768,8 +1768,8 @@ open class MaterialCalendarView : ViewGroup {
         this.state = state
         // Recreate adapter
         adapter = when (calendarMode) {
-            CalendarMode.MONTHS -> MonthPagerAdapter(this)
-            CalendarMode.WEEKS -> WeekPagerAdapter(this)
+            Mode.MONTHS -> MonthPagerAdapter(this)
+            Mode.WEEKS -> WeekPagerAdapter(this)
             else -> throw IllegalArgumentException("Provided display mode which is not yet implemented")
         }
 
@@ -1861,7 +1861,7 @@ open class MaterialCalendarView : ViewGroup {
         currentDate = ss.currentMonth
     }
 
-    fun setMode(mode: CalendarMode?) {
+    fun setMode(mode: Mode?) {
         state()?.apply {
             edit()
                 .setCalendarDisplayMode(mode)
@@ -1869,13 +1869,159 @@ open class MaterialCalendarView : ViewGroup {
         }
     }
 
-    fun updateAttrs(attrs: AttributeSet) {
+    fun updateAttributes(attrs: AttributeSet) {
+        context.theme.obtainStyledAttributes(
+            attrs,
+            R.styleable.MaterialCalendarView,
+            0,
+            0
+        ).apply {
+            try {
+
+
+                firstDayOfWeekInt = getInteger(
+                    R.styleable.MaterialCalendarView_firstDayOfWeek,
+                    firstDayOfWeekInt
+                )
+
+
+                titleChanger?.orientation = getInteger(
+                    R.styleable.MaterialCalendarView_titleAnimationOrientation,
+                    VERTICAL
+                )
+
+                firstDayOfWeek = if (firstDayOfWeekInt in 1..7) {
+                    DayOfWeek.of(firstDayOfWeekInt)
+                } else {
+                    WeekFields.of(Locale.getDefault()).firstDayOfWeek
+                }
+
+                showWeekDays = getBoolean(R.styleable.MaterialCalendarView_showWeekDays, true)
+
+                val calendarModeIndex = getInteger(
+                    R.styleable.MaterialCalendarView_calendarMode,
+                    0
+                )
+
+                newState {
+                    it.firstDayOfWeek = firstDayOfWeek
+                    it.setCalendarDisplayMode(Mode.values()[calendarModeIndex])
+                    it.showWeekDays = showWeekDays
+                }.commit(this@MaterialCalendarView)
+
+                selectionMode = getInteger(R.styleable.MaterialCalendarView_selectionMode, selectionMode)
+
+                calendarContentDescription
+
+                tileSize = getLayoutDimension(
+                    R.styleable.MaterialCalendarView_tileSize,
+                    INVALID_TILE_DIMENSION
+                )
+
+                val tWidth = getLayoutDimension(
+                    R.styleable.MaterialCalendarView_tileWidth,
+                    INVALID_TILE_DIMENSION
+                )
+
+                if (tWidth > INVALID_TILE_DIMENSION) {
+                    tileWidth = tWidth
+                }
+
+                val tHeight = getLayoutDimension(
+                    R.styleable.MaterialCalendarView_tileHeight,
+                    INVALID_TILE_DIMENSION
+                )
+                if (tileHeight > INVALID_TILE_DIMENSION) {
+                    tileHeight = tHeight
+                }
+                leftArrowRes = getResourceId(
+                    R.styleable.MaterialCalendarView_leftArrow,
+                    leftArrowRes
+                )
+
+                rightArrowRes = getResourceId(
+                    R.styleable.MaterialCalendarView_rightArrow,
+                    rightArrowRes
+                )
+
+                yearIconsColor = getResourceId(
+                    R.styleable.MaterialCalendarView_yearIconsColor,
+                    yearIconsColor
+                )
+
+                dayIconsColor = getResourceId(
+                    R.styleable.MaterialCalendarView_dayIconsColor,
+                    dayIconsColor
+                )
+
+                selectionColor = getColor(
+                    R.styleable.MaterialCalendarView_selectionColor,
+                    getThemeAccentColor(context)
+                )
+
+
+                getTextArray(R.styleable.MaterialCalendarView_weekDayLabels)?.let {
+                    weekDayFormatter = ArrayWeekDayFormatter(it)
+                }
+
+                getTextArray(R.styleable.MaterialCalendarView_monthLabels)?.let {
+                    setTitleFormatter(MonthArrayTitleFormatter(it))
+                }
+
+                headerTextAppearance = getResourceId(
+                    R.styleable.MaterialCalendarView_headerTextAppearance,
+                    headerTextAppearance
+                )
+
+                weekDayTextAppearance = getResourceId(
+                    R.styleable.MaterialCalendarView_weekDayTextAppearance,
+                    weekDayTextAppearance
+                )
+
+                dateTextAppearance = getResourceId(
+                    R.styleable.MaterialCalendarView_dateTextAppearance,
+                    R.style.TextAppearance_MaterialCalendarWidget_Date
+                )
+
+                showOtherDates = getInteger(
+                    R.styleable.MaterialCalendarView_showOtherDates,
+                    SHOW_DEFAULTS
+                )
+
+                allowClickDaysOutsideCurrentMonth = getBoolean(
+                    R.styleable.MaterialCalendarView_allowClickDaysOutsideCurrentMonth,
+                    true
+                )
+
+                textColor = getResourceId(
+                    R.styleable.MaterialCalendarView_dateTextColor,
+                    textColor
+                )
+
+
+                showTopBar = getBoolean(
+                    R.styleable.MaterialCalendarView_showTopBar,
+                    true
+                )
+
+
+            } catch (e: java.lang.Exception) {
+                Log.d(TAG, e.toString())
+            } finally {
+                recycle()
+            }
+        }
+    }
+
+    @Deprecated("Use @{link MaterialCalendarView#updateAttributes}")
+    private fun updateAttrs(attrs: AttributeSet) {
         val a = context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.MaterialCalendarView,
             0,
             0
         )
+
 
         try {
 
@@ -1907,7 +2053,7 @@ open class MaterialCalendarView : ViewGroup {
 
             newState {
                 it.firstDayOfWeek = firstDayOfWeek
-                it.setCalendarDisplayMode(CalendarMode.values()[calendarModeIndex])
+                it.setCalendarDisplayMode(Mode.values()[calendarModeIndex])
                 it.showWeekDays = showWeekDays
             }.commit(this)
 
@@ -2094,7 +2240,7 @@ open class MaterialCalendarView : ViewGroup {
         const val HORIZONTAL = 1
 
         @JvmStatic
-        val DEFAULT_VISIBLE_WEEKS_COUNT = CalendarMode.MONTHS.visibleWeeksCount
+        val DEFAULT_VISIBLE_WEEKS_COUNT = Mode.MONTHS.visibleWeeksCount
 
         /**
          * @param showOtherDates int flag for show other dates

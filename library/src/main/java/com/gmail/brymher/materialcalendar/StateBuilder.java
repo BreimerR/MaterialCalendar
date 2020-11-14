@@ -9,7 +9,7 @@ import org.threeten.bp.temporal.WeekFields;
 import java.util.*;
 
 public class StateBuilder {
-    public CalendarMode calendarMode;
+    public Mode calendarMode;
     public DayOfWeek firstDayOfWeek;
     public boolean cacheCurrentPosition = false;
     public CalendarDay minDate = null;
@@ -18,7 +18,7 @@ public class StateBuilder {
     public int showOtherDates = MaterialCalendarView.SHOW_DEFAULTS;
 
     public StateBuilder() {
-        calendarMode = CalendarMode.MONTHS;
+        calendarMode = Mode.MONTHS;
         firstDayOfWeek =
                 LocalDate.now().with(WeekFields.of(Locale.getDefault()).dayOfWeek(), 1).getDayOfWeek();
     }
@@ -52,7 +52,7 @@ public class StateBuilder {
      *
      * @param mode - calendar mode
      */
-    public StateBuilder setCalendarDisplayMode(CalendarMode mode) {
+    public StateBuilder setCalendarDisplayMode(Mode mode) {
         this.calendarMode = mode;
         return this;
     }

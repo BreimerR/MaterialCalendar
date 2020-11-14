@@ -9,7 +9,7 @@ import androidx.core.math.MathUtils
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.gmail.brymher.behaviors.ViewOffsetBehavior
-import com.gmail.brymher.materialcalendar.CalendarMode
+import com.gmail.brymher.materialcalendar.Mode
 import com.gmail.brymher.materialcalendar.MaterialCalendarView
 import com.google.android.material.appbar.AppBarLayout
 import java.util.*
@@ -20,7 +20,7 @@ class AppBarMaterialCalendarBehavior(
     attrs: AttributeSet
 ) : ViewOffsetBehavior<MaterialCalendarView>(context, attrs) {
 
-    private var calendarMode: CalendarMode? = CalendarMode.MONTHS
+    private var calendarMode: Mode? = Mode.MONTHS
     private var weekOfMonth =
         Calendar.getInstance()[Calendar.WEEK_OF_MONTH]
     private var calendarLineHeight = 0
@@ -33,7 +33,7 @@ class AppBarMaterialCalendarBehavior(
 
     val calendarHeight
         get() =
-            if (calendarMode == CalendarMode.WEEKS) weekCalendarHeight else monthCalendarHeight
+            if (calendarMode == Mode.WEEKS) weekCalendarHeight else monthCalendarHeight
 
     val calendarBottom get() = calendarHeight + appBarHeight
 
@@ -90,7 +90,7 @@ class AppBarMaterialCalendarBehavior(
             return
         }
         setMonthMode(child)
-        if (calendarMode == CalendarMode.MONTHS) {
+        if (calendarMode == Mode.MONTHS) {
             if (calendarLineHeight == 0) {
                 calendarLineHeight = child.measuredHeight / 7
                 weekCalendarHeight = calendarLineHeight * 2
@@ -137,7 +137,7 @@ class AppBarMaterialCalendarBehavior(
         if (!canAutoScroll) {
             return
         }
-        if (calendarMode == CalendarMode.MONTHS) {
+        if (calendarMode == Mode.MONTHS) {
             val scroller = Scroller(coordinatorLayout.context)
             var duration = 800
             val offset: Int = if (abs(velocityY) < 1000) {
@@ -202,34 +202,34 @@ class AppBarMaterialCalendarBehavior(
     }
 
     private fun setMonthMode(calendarView: MaterialCalendarView) {
-        if (calendarMode == CalendarMode.MONTHS) {
+        if (calendarMode == Mode.MONTHS) {
             return
         }
 
         calendarView.state()?.apply {
             edit()
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                .setCalendarDisplayMode(Mode.MONTHS)
                 .commit(calendarView)
         }
 
         setTopAndBottomOffset(-calendarLineHeight * (weekOfMonth - 1))
-        calendarMode = CalendarMode.MONTHS
+        calendarMode = Mode.MONTHS
     }
 
     private fun setWeekMode(calendarView: MaterialCalendarView) {
-        if (calendarMode == CalendarMode.WEEKS) {
+        if (calendarMode == Mode.WEEKS) {
             return
         }
 
         calendarView.state()?.apply {
             edit()
-                .setCalendarDisplayMode(CalendarMode.WEEKS)
+                .setCalendarDisplayMode(Mode.WEEKS)
                 .commit(calendarView)
         }
 
         setTopAndBottomOffset(calendarLineHeight)
 
-        calendarMode = CalendarMode.WEEKS
+        calendarMode = Mode.WEEKS
     }
 
 }

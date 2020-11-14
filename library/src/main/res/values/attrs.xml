@@ -4,16 +4,40 @@
     <declare-styleable name="MaterialCalendarView">
 
         <attr name="dateTextColor" format="color" />
+        <!-- {@deprecated Use app:showTopBar instead.} -->
         <attr name="mcv_showTopBar" format="boolean" />
+        <attr name="showTopBar" format="boolean" />
+        <!-- {@deprecated Use app:dateTextAppearance instead.} -->
         <attr name="mcv_dateTextAppearance" format="reference" />
+        <attr name="dateTextAppearance" format="reference" />
+        <!-- {@deprecated Use app:weekDayTextAppearance instead.} -->
         <attr name="mcv_weekDayTextAppearance" format="reference" />
+        <attr name="weekDayTextAppearance" format="reference" />
+        <!-- {@deprecated Use app:headerTextAppearance instead.} -->
         <attr name="mcv_headerTextAppearance" format="reference" />
+        <attr name="headerTextAppearance" format="reference" />
 
+        <!-- {@deprecated Use app:leftArrow instead.} -->
         <attr name="mcv_leftArrow" format="reference" />
+        <attr name="leftArrow" format="reference" />
+        <!-- {@deprecated Use app:rightArrow instead.} -->
         <attr name="mcv_rightArrow" format="reference" />
+        <attr name="rightArrow" format="reference" />
+        <!-- {@deprecated Use app:selectionColor instead.} -->
         <attr name="mcv_selectionColor" format="color" />
+        <attr name="selectionColor" format="color" />
 
+        <!-- {@deprecated Use app:showOtherDates instead.} -->
         <attr name="mcv_showOtherDates" format="integer">
+            <flag name="none" value="0" />
+            <flag name="other_months" value="1" />
+            <flag name="out_of_range" value="2" />
+            <flag name="decorated_disabled" value="4" />
+            <flag name="defaults" value="4" />
+            <flag name="all" value="7" />
+        </attr>
+
+        <attr name="showOtherDates" format="integer">
             <flag name="none" value="0" />
             <flag name="other_months" value="1" />
             <flag name="out_of_range" value="2" />
@@ -27,25 +51,47 @@
         <attr name="dayIconsColor" format="color" />
         <attr name="mcv_contentDescription" format="color" />
         <attr name="yearIconsColor" format="color" />
+        <!-- {@deprecated Use app:allowClickDaysOutsideCurrentMonth instead.} -->
         <attr name="mcv_allowClickDaysOutsideCurrentMonth" format="boolean" />
+        <attr name="allowClickDaysOutsideCurrentMonth" format="boolean" />
+        <!-- {@deprecated Use app:showWeekDays instead.} -->
         <attr name="mcv_showWeekDays" format="boolean" />
+        <attr name="showWeekDays" format="boolean" />
 
+        <!-- {@deprecated Use app:weekDayLabels instead.} -->
         <attr name="mcv_weekDayLabels" format="reference" />
+        <attr name="weekDayLabels" format="reference" />
+        <!-- {@deprecated Use app:monthLabels instead.} -->
         <attr name="mcv_monthLabels" format="reference" />
+        <attr name="monthLabels" format="reference" />
 
         <!-- We want to accept match_parent but not wrap_content. It'd be better if we could
         point to the real match_parent constant, but since it hasn't change since API 1,
         I think it's safe to hardcode it-->
+        <!-- {@deprecated Use app:tileSize instead.} -->
         <attr name="mcv_tileSize" format="dimension">
             <enum name="match_parent" value="-1" />
         </attr>
+        <!-- {@deprecated Use feature will be removed on next version} -->
+        <attr name="tileSize" format="dimension">
+            <enum name="match_parent" value="-1" />
+        </attr>
+        <!-- {@deprecated Use app:tileHeight instead.} -->
         <attr name="mcv_tileHeight" format="dimension">
             <enum name="match_parent" value="-1" />
         </attr>
+        <attr name="tileHeight" format="dimension">
+            <enum name="match_parent" value="-1" />
+        </attr>
+        <!-- {@deprecated Use app:tileWidth instead.} -->
         <attr name="mcv_tileWidth" format="dimension">
             <enum name="match_parent" value="-1" />
         </attr>
+        <attr name="tileWidth" format="dimension">
+            <enum name="match_parent" value="-1" />
+        </attr>
 
+        <!-- {@deprecated Use app:firstDayOfWeek instead.} -->
         <attr name="mcv_firstDayOfWeek" format="enum">
             <enum name="monday" value="1" />
             <enum name="tuesday" value="2" />
@@ -55,23 +101,55 @@
             <enum name="saturday" value="6" />
             <enum name="sunday" value="7" />
         </attr>
+        <attr name="firstDayOfWeek" format="enum">
+            <enum name="monday" value="1" />
+            <enum name="tuesday" value="2" />
+            <enum name="wednesday" value="3" />
+            <enum name="thursday" value="4" />
+            <enum name="friday" value="5" />
+            <enum name="saturday" value="6" />
+            <enum name="sunday" value="7" />
+        </attr>
 
+        <!-- {@deprecated Use app:calendarMode instead.} -->
         <attr name="mcv_calendarMode" format="enum">
             <enum name="month" value="0" />
             <enum name="week" value="1" />
         </attr>
+        <attr name="calendarMode" format="enum">
+            <enum name="month" value="0" />
+            <enum name="week" value="1" />
+        </attr>
 
+        <!-- {@deprecated Use app:selectionMode instead.} -->
         <attr name="mcv_selectionMode" format="enum">
             <enum name="none" value="0" />
             <enum name="single" value="1" />
             <enum name="multiple" value="2" />
             <enum name="range" value="3" />
         </attr>
+        <attr name="selectionMode" format="enum">
+            <enum name="none" value="0" />
+            <enum name="single" value="1" />
+            <enum name="multiple" value="2" />
+            <enum name="range" value="3" />
+        </attr>
 
+        <!-- {@deprecated Use app:titleAnimationOrientation instead.} -->
         <attr name="mcv_titleAnimationOrientation" format="enum">
             <enum name="vertical" value="0" />
             <enum name="horizontal" value="1" />
         </attr>
+        <attr name="titleAnimationOrientation" format="enum">
+            <enum name="vertical" value="0" />
+            <enum name="horizontal" value="1" />
+        </attr>
+
+        <!--TODO add listeners on dateChanged action-->
+        <attr name="onDateChanged" format="string" />
+        <!--TODO add on modeChanged Action -->
+        <attr name="onModeChange" format="string" />
+
     </declare-styleable>
 
 </resources>

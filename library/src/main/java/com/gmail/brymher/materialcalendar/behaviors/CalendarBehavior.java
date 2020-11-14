@@ -12,7 +12,7 @@ import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.gmail.brymher.behaviors.ViewOffsetBehavior;
-import com.gmail.brymher.materialcalendar.CalendarMode;
+import com.gmail.brymher.materialcalendar.Mode;
 import com.gmail.brymher.materialcalendar.MaterialCalendarView;
 
 import java.util.Calendar;
@@ -26,7 +26,7 @@ import static androidx.core.view.ViewCompat.TYPE_TOUCH;
 
 public class CalendarBehavior extends ViewOffsetBehavior<MaterialCalendarView> {
 
-    protected CalendarMode calendarMode = CalendarMode.MONTHS;
+    protected Mode calendarMode = Mode.MONTHS;
     private int weekOfMonth = Calendar.getInstance().get(Calendar.WEEK_OF_MONTH);
     private int calendarLineHeight;
     private int weekCalendarHeight;
@@ -60,7 +60,7 @@ public class CalendarBehavior extends ViewOffsetBehavior<MaterialCalendarView> {
             return;
         }
         setMonthMode(child);
-        if (calendarMode == CalendarMode.MONTHS) {
+        if (calendarMode == Mode.MONTHS) {
             if (calendarLineHeight == 0) {
                 calendarLineHeight = child.getMeasuredHeight() / 7;
                 weekCalendarHeight = calendarLineHeight * 2;
@@ -106,7 +106,7 @@ public class CalendarBehavior extends ViewOffsetBehavior<MaterialCalendarView> {
         if (!canAutoScroll) {
             return;
         }
-        if (calendarMode == CalendarMode.MONTHS) {
+        if (calendarMode == Mode.MONTHS) {
             final Scroller scroller = new Scroller(coordinatorLayout.getContext());
             int offset;
             int duration = 800;
@@ -178,34 +178,34 @@ public class CalendarBehavior extends ViewOffsetBehavior<MaterialCalendarView> {
     }
 
     protected void setMonthMode(MaterialCalendarView calendarView) {
-        if (calendarMode != CalendarMode.WEEKS) {
+        if (calendarMode != Mode.WEEKS) {
             return;
         }
         calendarMode = null;
         calendarView.state(null).edit()
-                .setCalendarDisplayMode(CalendarMode.MONTHS)
+                .setCalendarDisplayMode(Mode.MONTHS)
                 .commit(calendarView);
         setTopAndBottomOffset(-calendarLineHeight * (weekOfMonth - 1));
-        calendarMode = CalendarMode.MONTHS;
+        calendarMode = Mode.MONTHS;
     }
 
     private void setWeekMode(MaterialCalendarView calendarView) {
-        if (calendarMode != CalendarMode.MONTHS) {
+        if (calendarMode != Mode.MONTHS) {
             return;
         }
         calendarMode = null;
         calendarView.state(null).edit()
-                .setCalendarDisplayMode(CalendarMode.WEEKS)
+                .setCalendarDisplayMode(Mode.WEEKS)
                 .commit(calendarView);
         setTopAndBottomOffset(0);
-        calendarMode = CalendarMode.WEEKS;
+        calendarMode = Mode.WEEKS;
     }
 
     public void setWeekOfMonth(int weekOfMonth) {
         this.weekOfMonth = weekOfMonth;
     }
 
-    public CalendarMode getCalendarMode() {
+    public Mode getCalendarMode() {
         return calendarMode;
     }
 }

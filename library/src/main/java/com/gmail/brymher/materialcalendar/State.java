@@ -3,7 +3,7 @@ package com.gmail.brymher.materialcalendar;
 import org.threeten.bp.DayOfWeek;
 
 public class State {
-    public final CalendarMode calendarMode;
+    public final Mode calendarMode;
     public final DayOfWeek firstDayOfWeek;
     public final CalendarDay minDate;
     public final CalendarDay maxDate;

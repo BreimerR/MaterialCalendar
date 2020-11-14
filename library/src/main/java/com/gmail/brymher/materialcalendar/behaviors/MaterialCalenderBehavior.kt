@@ -1,15 +1,15 @@
 package com.gmail.brymher.materialcalendar.behaviors
 
 import com.gmail.brymher.behaviors.ViewOffsetBehavior
-import com.gmail.brymher.materialcalendar.CalendarMode
+import com.gmail.brymher.materialcalendar.Mode
 import com.gmail.brymher.materialcalendar.MaterialCalendarView
 import java.util.*
 
 class MaterialCalenderBehavior : ViewOffsetBehavior<MaterialCalendarView>() {
 
-    val TAG = "MaterialCalender"
+    private val TAG = "MaterialCalender"
 
-    private var calendarMode = CalendarMode.MONTHS
+    private var calendarMode = Mode.MONTHS
 
     private val weekOfMonth get() = Calendar.getInstance()[Calendar.WEEK_OF_MONTH]
 
@@ -20,23 +20,23 @@ class MaterialCalenderBehavior : ViewOffsetBehavior<MaterialCalendarView>() {
 
 
     private fun setMonthMode(calendarView: MaterialCalendarView) {
-        if (calendarMode != CalendarMode.WEEKS) {
+        if (calendarMode != Mode.WEEKS) {
             return
         }
-        calendarView.setMode(CalendarMode.MONTHS)
+        calendarView.setMode(Mode.MONTHS)
         setTopAndBottomOffset(-calendarLineHeight * (weekOfMonth - 1))
-        calendarMode = CalendarMode.MONTHS
+        calendarMode = Mode.MONTHS
     }
 
 
     private fun setWeekMode(calendarView: MaterialCalendarView) {
-        if (calendarMode == CalendarMode.WEEKS) {
+        if (calendarMode == Mode.WEEKS) {
             return
         }
-        calendarView.setMode(CalendarMode.WEEKS)
+        calendarView.setMode(Mode.WEEKS)
 
         setTopAndBottomOffset(0)
-        calendarMode = CalendarMode.WEEKS
+        calendarMode = Mode.WEEKS
 
     }
 }
