@@ -38,6 +38,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 import android.util.Log
+import androidx.core.graphics.drawable.DrawableCompat
 import com.gmail.brymher.materialcalendar.utils.getDrawableCompat
 import com.gmail.brymher.materialcalendar.DayView.DEFAULT_TEXT_COLOR
 import com.gmail.brymher.materialcalendar.utils.setTintCompat
@@ -45,7 +46,6 @@ import com.gmail.brymher.materialcalendar.utils.setTintCompat
 @Suppress("MemberVisibilityCanBePrivate")
 open class MaterialCalendarView : ViewGroup {
 
-    @Suppress("PrivatePropertyName")
     private val TAG = this::class.simpleName ?: "MaterialCalendar"
 
     // variables
