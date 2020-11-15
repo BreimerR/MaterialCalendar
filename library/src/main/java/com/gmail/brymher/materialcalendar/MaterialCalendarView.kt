@@ -1575,9 +1575,9 @@ open class MaterialCalendarView : ViewGroup {
             val isInMonthsMode = it == Mode.MONTHS
             if (isInMonthsMode && dynamicHeightEnabled && adapter != null) {
                 var a = adapter!!
-                val cal = adapter!!.getItem(pager.currentItem).date
-                val tempLastDay = cal.withDayOfMonth(cal.lengthOfMonth())
-                weekCount = tempLastDay[WeekFields.of(firstDayOfWeek, 1).weekOfMonth()]
+                val cal = adapter!!.getItem(pager.currentItem)?.date
+                val tempLastDay = cal?.withDayOfMonth(cal.lengthOfMonth())
+                weekCount = tempLastDay?.get(WeekFields.of(firstDayOfWeek, 1).weekOfMonth()) ?: 0
             }
         }
 
