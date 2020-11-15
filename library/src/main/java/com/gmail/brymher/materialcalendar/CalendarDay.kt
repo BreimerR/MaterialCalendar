@@ -11,6 +11,8 @@ open class CalendarDay protected constructor(date: LocalDate) : Parcelable {
      */
     @Suppress("CanBePrimaryConstructorProperty")
     public val date = date
+    val year
+        get() = date.year
 
     constructor(parcel: Parcel) : this(parcel.readInt(), parcel.readInt(), parcel.readInt())
 
@@ -29,14 +31,7 @@ open class CalendarDay protected constructor(date: LocalDate) : Parcelable {
                 !(maxDate != null && maxDate.isBefore(this))
     }
 
-    /**
-     * Get the year
-     *
-     * @return the year for this day
-     */
-    open fun getYear(): Int {
-        return date.year
-    }
+
 
     /**
      * Get the month, represented by values from [LocalDate]

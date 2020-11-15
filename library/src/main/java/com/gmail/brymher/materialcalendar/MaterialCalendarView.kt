@@ -479,17 +479,22 @@ open class MaterialCalendarView : ViewGroup {
     var _calendarContentDescription: CharSequence? = null
 
 
-    var calendarContentDescription: CharSequence = context.getString(R.string.calendar)
+    /**
+     * Should be the description from xml attrs
+     * */
+    var calendarContentDescription: CharSequence
         /**
          * Get content description for calendar
          *
          * @return calendar's content description
          */
         get() {
-            _calendarContentDescription?.let {
-                return it
+
+            if (_calendarContentDescription == null) {
+                _calendarContentDescription = context.getString(R.string.calendar)
             }
-            return field
+
+            return _calendarContentDescription!!
         }
         /**
          * Set content description for calendar
@@ -1442,7 +1447,7 @@ open class MaterialCalendarView : ViewGroup {
      *
      * @param date date that should be de-selected
      */
-    protected open fun onDateUnselected(date: CalendarDay?) {
+    public open fun onDateUnselected(date: CalendarDay?) {
         dispatchOnDateSelected(date, false)
     }
 

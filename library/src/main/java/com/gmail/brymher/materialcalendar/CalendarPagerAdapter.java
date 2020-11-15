@@ -370,6 +370,7 @@ public abstract class CalendarPagerAdapter<V extends CalendarPagerView> extends 
         }
     }
 
+    @Nullable
     public CalendarDay getItem(int position) {
         return rangeIndex.getItem(position);
     }
@@ -379,10 +380,11 @@ public abstract class CalendarPagerAdapter<V extends CalendarPagerView> extends 
         return Collections.unmodifiableList(selectedDates);
     }
 
-    /**TODO
+    /**
+     * TODO
      * test not sure if this affects the selected dates
      * on the fly
-     * */
+     */
     public void setSelectedDates(List<CalendarDay> dates) {
         selectedDates = dates;
     }
