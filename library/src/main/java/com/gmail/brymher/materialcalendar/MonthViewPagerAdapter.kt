@@ -1,12 +1,17 @@
 package com.gmail.brymher.materialcalendar
 
 
+import com.gmail.brymher.materialcalendar.CalendarDay.Companion.from
 import org.threeten.bp.Period
 
 
-
-class MonthViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = null) :
+class MonthViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = CalendarDay.today) :
     ViewPagerAdapter<MonthView>(mcv, today) {
+
+    init {
+        currentViews.iterator();
+        setRangeDates(null, null)
+    }
 
     override fun createView(position: Int): MonthView =
         MonthView(
@@ -22,23 +27,30 @@ class MonthViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = nul
     override fun isInstanceOfView(obj: Any): Boolean =
         obj is MonthView
 
-    override fun createRangeIndex(min: CalendarDay, max: CalendarDay): DateRangeIndex =
+    override fun createRangeIndex(min: CalendarDay?, max: CalendarDay?): DateRangeIndex =
         Monthly(min, max)
 
 
-    class Monthly(val min: CalendarDay, val max: CalendarDay) : DateRangeIndex {
+    class Monthly(minCalendarDay: CalendarDay?, private val max: CalendarDay?) : DateRangeIndex {
 
         override val count: Int = indexOf(max) + 1
 
-        override fun indexOf(day: CalendarDay?): Int =
-            day?.let {
-                Period
-                    .between(min.date, it.date.withDayOfMonth(1))
-                    .toTotalMonths().toInt()
-            } ?: -1
+        private var min: CalendarDay? = minCalendarDay?.let {
+            from(it.year, it.getMonth(), 1)
+        }
 
-        override fun getItem(position: Int): CalendarDay? =
-            CalendarDay.from(min.date.plusMonths(position.toLong()))
+        override fun indexOf(day: CalendarDay?): Int = day?.let {
+            min?.let { m ->
+                Period
+                    .between(m.date, it.date.withDayOfMonth(1))
+                    .toTotalMonths().toInt()
+            }
+
+        } ?: 0
+
+        override fun getItem(position: Int): CalendarDay? = min?.let {
+            from(it.date.plusMonths(position.toLong()))
+        }
 
     }
 }

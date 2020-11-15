@@ -6,7 +6,6 @@ import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.os.Build
-import android.os.Parcel
 import android.os.Parcelable
 import android.util.AttributeSet
 import android.util.SparseArray
@@ -38,10 +37,11 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sqrt
 import android.util.Log
-import androidx.core.graphics.drawable.DrawableCompat
+import androidx.viewpager.widget.PagerAdapter.POSITION_UNCHANGED
 import com.gmail.brymher.materialcalendar.utils.getDrawableCompat
 import com.gmail.brymher.materialcalendar.DayView.DEFAULT_TEXT_COLOR
 import com.gmail.brymher.materialcalendar.utils.setTintCompat
+import java.lang.IllegalStateException
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class MaterialCalendarView : ViewGroup {
@@ -80,7 +80,7 @@ open class MaterialCalendarView : ViewGroup {
             }
 
             accentColor = color
-            adapter?.selectionColor  = color
+            adapter?.selectionColor = color
             invalidate()
         }
 
@@ -353,8 +353,8 @@ open class MaterialCalendarView : ViewGroup {
          * @param formatter the new formatter, null for default
          */
         set(value) {
-            value?.let{
-                adapter?.dayFormatterContentDescription =  it
+            value?.let {
+                adapter?.dayFormatterContentDescription = it
             }
         }
 
@@ -433,13 +433,12 @@ open class MaterialCalendarView : ViewGroup {
         }
 
 
-
     var adapter: ViewPagerAdapter<*>? = null
         set(value) {
             field = if (field == null) {
                 value
             } else {
-                value?.let{
+                value?.let {
                     field!!.migrateStateAndReturn(it)
                 }
             }
@@ -454,17 +453,19 @@ open class MaterialCalendarView : ViewGroup {
      * @return Whichever mode the calendar is currently in.
      */
     var calendarMode: Mode? = Mode.MONTHS
-        set(value) {
+        set(mode) {
             var tileHeight = INVALID_TILE_DIMENSION
             // Reset height params after mode change
-            value?.let {
+            mode?.let {
                 tileHeight =
                     if (showWeekDays) it.visibleWeeksCount + CalendarPagerView.DAY_NAMES_ROW else it.visibleWeeksCount
+
+
             }
 
             pager.layoutParams = LayoutParams(tileHeight)
 
-            field = value
+            field = mode
         }
 
     var currentMonth: CalendarDay? = if (isInEditMode) null else CalendarDay.today
@@ -608,9 +609,8 @@ open class MaterialCalendarView : ViewGroup {
     fun setCurrentDate(day: CalendarDay?, useSmoothScroll: Boolean = true) {
         day?.let {
 
-            adapter?.let {
-                val index = it.getIndexForDay(day)
-                pager.setCurrentItem(index, useSmoothScroll)
+            adapter?.getIndexForDay(day)?.let {
+                pager.setCurrentItem(it, useSmoothScroll)
             }
 
             updateUi()
@@ -1002,7 +1002,7 @@ open class MaterialCalendarView : ViewGroup {
      * @param formatter the new formatter, null for default
      */
     open fun setDayFormatter(formatter: DayFormatter?) {
-        adapter?.dayFormatter  = formatter ?: DayFormatter.DEFAULT
+        adapter?.dayFormatter = formatter ?: DayFormatter.DEFAULT
     }
 
     /**
@@ -1477,7 +1477,7 @@ open class MaterialCalendarView : ViewGroup {
      */
     open fun removeDecorators() {
         dayViewDecorators.clear()
-        adapter!!.decorators =dayViewDecorators
+        adapter!!.decorators = dayViewDecorators
     }
 
 
@@ -1778,10 +1778,17 @@ open class MaterialCalendarView : ViewGroup {
         }
         this.state = state
         // Recreate adapter
+
         adapter = when (calendarMode) {
-            Mode.MONTHS -> MonthViewPagerAdapter(this)
-            Mode.WEEKS -> WeekViewPagerAdapter(this)
-            else -> throw IllegalArgumentException("Provided display mode which is not yet implemented")
+            Mode.MONTHS -> {
+                Log.d(TAG, "Updating calendar Mode to MonthMode")
+                MonthViewPagerAdapter(this)
+            }
+            Mode.WEEKS -> {
+                Log.d(TAG, "Updating calendar Mode to WeekMode")
+                WeekViewPagerAdapter(this)
+            }
+            else -> throw IllegalStateException("Calendar Mode not valid $calendarMode")
         }
 
         setRangeDates(minDate, maxDate)
@@ -1794,7 +1801,7 @@ open class MaterialCalendarView : ViewGroup {
 
         calendarDayToShow?.let { day ->
             adapter?.let {
-                pager.currentItem = it.getIndexForDay(day)
+                pager.currentItem = it.getIndexForDay(day) ?: POSITION_UNCHANGED
             }
         }
 

@@ -9,13 +9,10 @@ import com.gmail.brymher.materialcalendar.format.DayFormatter
 import com.gmail.brymher.materialcalendar.format.TitleFormatter
 import com.gmail.brymher.materialcalendar.format.WeekDayFormatter
 import org.threeten.bp.LocalDate
-import java.util.*
-import kotlin.collections.ArrayDeque
-import kotlin.collections.ArrayList
 
 abstract class ViewPagerAdapter<V : CalendarPagerView>(
     protected val mcv: MaterialCalendarView,
-    protected var today: CalendarDay? = CalendarDay.today()
+    private var today: CalendarDay? = CalendarDay.today
 ) : PagerAdapter() {
 
     /** TODO
@@ -82,10 +79,11 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
     protected var minDate: CalendarDay? = null
     protected var maxDate: CalendarDay? = null
     protected var rangeIndex: DateRangeIndex? = null
+
     var selectedDates = mutableListOf<CalendarDay>()
-        get() = Collections.unmodifiableList(field)
 
     var weekDayFormatter = WeekDayFormatter.DEFAULT
+
     var dayFormatter: DayFormatter = DayFormatter.DEFAULT
         set(value) {
             dayFormatterContentDescription =
@@ -117,10 +115,6 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
         }
     var showWeekDays = true
 
-    init {
-        currentViews.iterator();
-    }
-
 
     fun invalidateDecorators() {
         decoratorResults = mutableListOf()
@@ -150,8 +144,8 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
     open fun migrateStateAndReturn(newAdapter: ViewPagerAdapter<*>): ViewPagerAdapter<*>? {
         newAdapter.titleFormatter = titleFormatter!!
         newAdapter.color = color
-        newAdapter.dateTextAppearance = dateTextAppearance!!
-        newAdapter.weekDayTextAppearance = weekDayTextAppearance!!
+        newAdapter.dateTextAppearance = dateTextAppearance
+        newAdapter.weekDayTextAppearance = weekDayTextAppearance
         newAdapter.showOtherDates = showOtherDates
         newAdapter.minDate = minDate
         newAdapter.maxDate = maxDate
@@ -162,12 +156,13 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
         newAdapter.decorators = decorators
         newAdapter.decoratorResults = decoratorResults
         newAdapter.selectionEnabled = selectionEnabled
+        newAdapter.rangeIndex = rangeIndex
+
         return newAdapter
     }
 
-    fun getIndexForDay(day: CalendarDay?): Int {
+    fun getIndexForDay(day: CalendarDay?): Int? {
         if (day == null) return count / 2
-
 
 
         minDate?.let {
@@ -179,7 +174,7 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
             if (day.isAfter(it)) return count - 1
         }
 
-        return rangeIndex?.indexOf(day) ?: 0
+        return rangeIndex?.indexOf(day)
 
     }
 
@@ -192,7 +187,7 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
 
     protected abstract fun isInstanceOfView(obj: Any): Boolean
 
-    protected abstract fun createRangeIndex(min: CalendarDay, max: CalendarDay): DateRangeIndex
+    protected abstract fun createRangeIndex(min: CalendarDay?, max: CalendarDay?): DateRangeIndex
 
     override fun getItemPosition(obj: Any): Int {
 
@@ -200,12 +195,12 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
 
         (obj as CalendarPagerView).firstViewDay ?: return POSITION_NONE
 
-        val index = indexOf(obj as V)
+        @Suppress("UNCHECKED_CAST")
+        return indexOf(obj as V)?.let {
+            if (it < 0) return POSITION_NONE
 
-        if (index != null && index < 0) return POSITION_NONE
-
-        return index ?: 0
-
+            it
+        } ?: POSITION_UNCHANGED
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any = createView(position).apply {
@@ -278,8 +273,10 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
             }
         }
 
+
+
         if (m != null && mx != null)
-            rangeIndex = createRangeIndex(m!!, mx!!)
+            rangeIndex = createRangeIndex(m, mx)
 
         notifyDataSetChanged()
 

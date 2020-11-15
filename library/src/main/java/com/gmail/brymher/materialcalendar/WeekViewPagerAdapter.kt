@@ -6,9 +6,13 @@ import org.threeten.bp.temporal.ChronoUnit
 import org.threeten.bp.temporal.WeekFields
 
 
-
-class WeekViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = null) :
+class WeekViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = CalendarDay.today) :
     ViewPagerAdapter<WeekView>(mcv, today) {
+
+    init {
+        currentViews.iterator();
+        setRangeDates(null, null)
+    }
 
     /**
      * Creates the main view for a week
@@ -25,11 +29,13 @@ class WeekViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = null
 
     override fun isInstanceOfView(obj: Any): Boolean = obj is WeekView
 
-    override fun createRangeIndex(min: CalendarDay, max: CalendarDay): DateRangeIndex =
+    override fun createRangeIndex(min: CalendarDay?, max: CalendarDay?): DateRangeIndex =
         Weekly(min, max, mcv.firstDayOfWeek)
 
-    class Weekly(val min: CalendarDay, val max: CalendarDay, val firstDayOfWeek: DayOfWeek?) :
+    class Weekly(minCalendarDay: CalendarDay?, max: CalendarDay?, val firstDayOfWeek: DayOfWeek?) :
         DateRangeIndex {
+
+        private val min = getFirstDayOfWeek(minCalendarDay)
 
         /**
          * Number of weeks to show
@@ -41,16 +47,17 @@ class WeekViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = null
         }
 
 
-        override fun indexOf(day: CalendarDay?): Int {
-            val weekFields = WeekFields.of(firstDayOfWeek, 1)
-            val temp = day?.date?.with(weekFields.dayOfWeek(), 1L)
-            return temp?.let {
-                ChronoUnit.WEEKS.between(min.date, it).toInt()
-            } ?: 0
-        }
+        override fun indexOf(day: CalendarDay?): Int =
+            day?.date?.with(WeekFields.of(firstDayOfWeek, 1).dayOfWeek(), 1L)?.let {
+                min?.let { m ->
+                    ChronoUnit.WEEKS.between(m.date, it).toInt()
+                }
 
-        override fun getItem(position: Int): CalendarDay? {
-            return CalendarDay.from(min.date.plusWeeks(position.toLong()))
+            } ?: POSITION_UNCHANGED
+
+
+        override fun getItem(position: Int): CalendarDay? = min?.let {
+            from(min.date.plusWeeks(position.toLong()))
         }
 
 
@@ -58,9 +65,8 @@ class WeekViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = null
          * Getting the first day of a week for a specific date based on a specific week day as first
          * day.
          */
-        fun getFirstDayOfWeek(day: CalendarDay): CalendarDay? {
-            val temp = day.date.with(WeekFields.of(firstDayOfWeek, 1).dayOfWeek(), 1L)
-            return from(temp)
+        fun getFirstDayOfWeek(day: CalendarDay?): CalendarDay? = day?.let {
+            from(it.date.with(WeekFields.of(firstDayOfWeek, 1).dayOfWeek(), 1L))
         }
     }
 
