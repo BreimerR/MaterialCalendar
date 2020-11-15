@@ -13,7 +13,6 @@ import java.util.*
 import kotlin.collections.ArrayDeque
 import kotlin.collections.ArrayList
 
-@ExperimentalStdlibApi
 abstract class ViewPagerAdapter<V : CalendarPagerView>(
     protected val mcv: MaterialCalendarView,
     protected var today: CalendarDay? = CalendarDay.today()
@@ -23,7 +22,7 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
      * parent container already stores the
      * list of children and doing this is a bit repetitive
      * */
-    protected val currentViews: ArrayDeque<V> = ArrayDeque()
+    protected val currentViews = mutableListOf<V>()
 
     @DrawableRes
     var textColor: Int = DayView.DEFAULT_TEXT_COLOR
@@ -66,7 +65,7 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
         }
 
     @ShowOtherDates
-    private var showOtherDates = MaterialCalendarView.SHOW_DEFAULTS
+    var showOtherDates = MaterialCalendarView.SHOW_DEFAULTS
         set(value) {
             field = value
 
@@ -83,10 +82,10 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
     protected var minDate: CalendarDay? = null
     protected var maxDate: CalendarDay? = null
     protected var rangeIndex: DateRangeIndex? = null
-    protected var selectedDates: MutableList<CalendarDay> = ArrayList()
+    var selectedDates = mutableListOf<CalendarDay>()
         get() = Collections.unmodifiableList(field)
 
-    private var weekDayFormatter = WeekDayFormatter.DEFAULT
+    var weekDayFormatter = WeekDayFormatter.DEFAULT
     var dayFormatter: DayFormatter = DayFormatter.DEFAULT
         set(value) {
             dayFormatterContentDescription =
@@ -101,7 +100,7 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
             field = value
             applyToCurrentViews { setDayFormatterContentDescription(value) }
         }
-    protected var decorators = mutableListOf<DayViewDecorator>()
+    var decorators = mutableListOf<DayViewDecorator>()
         set(value) {
             field = value
             invalidateDecorators()
@@ -195,7 +194,7 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
 
     protected abstract fun createRangeIndex(min: CalendarDay, max: CalendarDay): DateRangeIndex
 
-    override fun getItemPosition(obj: Any): Int? {
+    override fun getItemPosition(obj: Any): Int {
 
         if (!(isInstanceOfView(obj))) return POSITION_NONE
 
@@ -203,9 +202,9 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
 
         val index = indexOf(obj as V)
 
-        if (index!= null && index < 0) return POSITION_NONE
+        if (index != null && index < 0) return POSITION_NONE
 
-        return index
+        return index ?: 0
 
     }
 
@@ -279,7 +278,8 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
             }
         }
 
-        rangeIndex = createRangeIndex(m!!, mx!!)
+        if (m != null && mx != null)
+            rangeIndex = createRangeIndex(m!!, mx!!)
 
         notifyDataSetChanged()
 
@@ -373,6 +373,6 @@ abstract class ViewPagerAdapter<V : CalendarPagerView>(
 
     }
 
-    protected fun getItem(position: Int): CalendarDay? = rangeIndex?.getItem(position)
+    fun getItem(position: Int): CalendarDay? = rangeIndex?.getItem(position)
 
 }

@@ -80,7 +80,7 @@ open class MaterialCalendarView : ViewGroup {
             }
 
             accentColor = color
-            adapter?.setSelectionColor(color)
+            adapter?.selectionColor  = color
             invalidate()
         }
 
@@ -161,7 +161,7 @@ open class MaterialCalendarView : ViewGroup {
     private var _weekDayFormatter: WeekDayFormatter? = null
         set(formatter) {
             field = formatter
-            adapter?.setWeekDayFormatter(formatter)
+            adapter?.weekDayFormatter = formatter
         }
 
     /**
@@ -345,14 +345,17 @@ open class MaterialCalendarView : ViewGroup {
         }
 
     @Suppress("MemberVisibilityCanBePrivate")
-    var dayFormatterContentDescription: DayFormatter? = null
+    var dayFormatterContentDescription
+        get() = adapter?.dayFormatterContentDescription
         /**
          * Set a formatter for day content description.
          *
          * @param formatter the new formatter, null for default
          */
         set(value) {
-            adapter?.setDayFormatterContentDescription(value)
+            value?.let{
+                adapter?.dayFormatterContentDescription =  it
+            }
         }
 
     @Suppress("MemberVisibilityCanBePrivate")
@@ -430,12 +433,15 @@ open class MaterialCalendarView : ViewGroup {
         }
 
 
-    var adapter: CalendarPagerAdapter<*>? = null
+
+    var adapter: ViewPagerAdapter<*>? = null
         set(value) {
             field = if (field == null) {
                 value
             } else {
-                field!!.migrateStateAndReturn(value)
+                value?.let{
+                    field!!.migrateStateAndReturn(it)
+                }
             }
 
             pager.adapter = field
@@ -626,8 +632,8 @@ open class MaterialCalendarView : ViewGroup {
      * @see MaterialCalendarView.getSelectedDate
      */
     @Suppress("MemberVisibilityCanBePrivate")
-    var selectedDates: List<CalendarDay>
-        get() = adapter?.selectedDates ?: listOf()
+    var selectedDates: MutableList<CalendarDay>
+        get() = adapter?.selectedDates ?: mutableListOf()
         set(dates) {
             adapter?.selectedDates = dates
         }
@@ -687,7 +693,7 @@ open class MaterialCalendarView : ViewGroup {
                 }
             }
 
-            adapter?.setSelectionEnabled(selectionMode != SELECTION_MODE_NONE)
+            adapter?.selectionEnabled = selectionMode != SELECTION_MODE_NONE
         }
 
     /**
@@ -996,7 +1002,7 @@ open class MaterialCalendarView : ViewGroup {
      * @param formatter the new formatter, null for default
      */
     open fun setDayFormatter(formatter: DayFormatter?) {
-        adapter?.setDayFormatter(formatter ?: DayFormatter.DEFAULT)
+        adapter?.dayFormatter  = formatter ?: DayFormatter.DEFAULT
     }
 
     /**
@@ -1057,7 +1063,7 @@ open class MaterialCalendarView : ViewGroup {
      */
     open fun setTitleFormatter(titleFormatter: TitleFormatter?) {
         titleChanger?.setTitleFormatter(titleFormatter)
-        adapter?.setTitleFormatter(titleFormatter)
+        adapter?.titleFormatter = titleFormatter
         updateUi()
     }
 
@@ -1196,7 +1202,7 @@ open class MaterialCalendarView : ViewGroup {
             return
         }
         dayViewDecorators.addAll(decorators)
-        adapter?.setDecorators(dayViewDecorators)
+        adapter?.decorators = dayViewDecorators
     }
 
 
@@ -1220,7 +1226,7 @@ open class MaterialCalendarView : ViewGroup {
             return
         }
         dayViewDecorators.add(decorator)
-        adapter?.setDecorators(dayViewDecorators)
+        adapter?.decorators = dayViewDecorators
     }
 
 
@@ -1275,7 +1281,7 @@ open class MaterialCalendarView : ViewGroup {
      */
     open fun removeDecorator(decorator: DayViewDecorator) {
         dayViewDecorators.remove(decorator)
-        adapter?.setDecorators(dayViewDecorators)
+        adapter?.decorators = dayViewDecorators
     }
 
     /**
@@ -1471,7 +1477,7 @@ open class MaterialCalendarView : ViewGroup {
      */
     open fun removeDecorators() {
         dayViewDecorators.clear()
-        adapter!!.setDecorators(dayViewDecorators)
+        adapter!!.decorators =dayViewDecorators
     }
 
 
@@ -1773,8 +1779,8 @@ open class MaterialCalendarView : ViewGroup {
         this.state = state
         // Recreate adapter
         adapter = when (calendarMode) {
-            Mode.MONTHS -> MonthPagerAdapter(this)
-            Mode.WEEKS -> WeekPagerAdapter(this)
+            Mode.MONTHS -> MonthViewPagerAdapter(this)
+            Mode.WEEKS -> WeekViewPagerAdapter(this)
             else -> throw IllegalArgumentException("Provided display mode which is not yet implemented")
         }
 

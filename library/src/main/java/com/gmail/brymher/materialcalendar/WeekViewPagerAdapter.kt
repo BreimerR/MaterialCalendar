@@ -6,7 +6,7 @@ import org.threeten.bp.temporal.ChronoUnit
 import org.threeten.bp.temporal.WeekFields
 
 
-@ExperimentalStdlibApi
+
 class WeekViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = null) :
     ViewPagerAdapter<WeekView>(mcv, today) {
 

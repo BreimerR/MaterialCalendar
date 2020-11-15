@@ -5,7 +5,6 @@ import org.threeten.bp.Period
 
 
 
-@ExperimentalStdlibApi
 class MonthViewPagerAdapter(mcv: MaterialCalendarView, today: CalendarDay? = null) :
     ViewPagerAdapter<MonthView>(mcv, today) {
 
