@@ -14,16 +14,16 @@ import kotlin.collections.ArrayDeque
 import kotlin.collections.ArrayList
 
 @ExperimentalStdlibApi
-internal abstract class ViewPagerAdapter<V : CalendarPagerView>(
-    private val mcv: MaterialCalendarView,
-    var today: CalendarDay? = CalendarDay.today()
+abstract class ViewPagerAdapter<V : CalendarPagerView>(
+    protected val mcv: MaterialCalendarView,
+    protected var today: CalendarDay? = CalendarDay.today()
 ) : PagerAdapter() {
 
     /** TODO
      * parent container already stores the
      * list of children and doing this is a bit repetitive
      * */
-    private val currentViews: ArrayDeque<V> = ArrayDeque()
+    protected val currentViews: ArrayDeque<V> = ArrayDeque()
 
     @DrawableRes
     var textColor: Int = DayView.DEFAULT_TEXT_COLOR
@@ -80,10 +80,10 @@ internal abstract class ViewPagerAdapter<V : CalendarPagerView>(
         }
     }
 
-    private var minDate: CalendarDay? = null
-    private var maxDate: CalendarDay? = null
-    private var rangeIndex: DateRangeIndex? = null
-    private var selectedDates: MutableList<CalendarDay> = ArrayList()
+    protected var minDate: CalendarDay? = null
+    protected var maxDate: CalendarDay? = null
+    protected var rangeIndex: DateRangeIndex? = null
+    protected var selectedDates: MutableList<CalendarDay> = ArrayList()
         get() = Collections.unmodifiableList(field)
 
     private var weekDayFormatter = WeekDayFormatter.DEFAULT
@@ -101,13 +101,13 @@ internal abstract class ViewPagerAdapter<V : CalendarPagerView>(
             field = value
             applyToCurrentViews { setDayFormatterContentDescription(value) }
         }
-    private var decorators = mutableListOf<DayViewDecorator>()
+    protected var decorators = mutableListOf<DayViewDecorator>()
         set(value) {
             field = value
             invalidateDecorators()
         }
 
-    private var decoratorResults: MutableList<DecoratorResult>? = null
+    protected var decoratorResults: MutableList<DecoratorResult>? = null
     var selectionEnabled = true
         set(value) {
             field = value
@@ -187,15 +187,15 @@ internal abstract class ViewPagerAdapter<V : CalendarPagerView>(
     /**
      * This is a single month/ week view
      * */
-    abstract fun createView(position: Int): V
+    protected abstract fun createView(position: Int): V
 
-    abstract fun indexOf(view: V): Int
+    protected abstract fun indexOf(view: V): Int?
 
-    abstract fun isInstanceOfView(obj: Any): Boolean
+    protected abstract fun isInstanceOfView(obj: Any): Boolean
 
     protected abstract fun createRangeIndex(min: CalendarDay, max: CalendarDay): DateRangeIndex
 
-    override fun getItemPosition(obj: Any): Int {
+    override fun getItemPosition(obj: Any): Int? {
 
         if (!(isInstanceOfView(obj))) return POSITION_NONE
 
@@ -203,7 +203,7 @@ internal abstract class ViewPagerAdapter<V : CalendarPagerView>(
 
         val index = indexOf(obj as V)
 
-        if (index < 0) return POSITION_NONE
+        if (index!= null && index < 0) return POSITION_NONE
 
         return index
 
@@ -322,7 +322,7 @@ internal abstract class ViewPagerAdapter<V : CalendarPagerView>(
         }
     }
 
-    private fun clearSelectedDates() {
+    protected fun clearSelectedDates() {
         selectedDates.clear()
     }
 
@@ -373,6 +373,6 @@ internal abstract class ViewPagerAdapter<V : CalendarPagerView>(
 
     }
 
-    private fun getItem(position: Int): CalendarDay? = rangeIndex?.getItem(position)
+    protected fun getItem(position: Int): CalendarDay? = rangeIndex?.getItem(position)
 
 }

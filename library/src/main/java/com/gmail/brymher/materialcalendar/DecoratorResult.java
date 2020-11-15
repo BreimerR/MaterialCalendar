@@ -1,6 +1,6 @@
 package com.gmail.brymher.materialcalendar;
 
-class DecoratorResult {
+public class DecoratorResult {
   public final DayViewDecorator decorator;
   public final DayViewFacade result;
 
